@@ -20,22 +20,45 @@ margin-bottom:15px;
 box-shadow:0 0 5px #ccc;
 }
 
+input,select,button{
+width:100%;
+padding:10px;
+margin-top:8px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
 button{
 background:#0d6efd;
 color:white;
 border:none;
-padding:10px;
-border-radius:6px;
-width:100%;
-font-size:16px;
+cursor:pointer;
 }
 
-input,select{
+table{
 width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+th,td{
+border:1px solid #ddd;
+padding:8px;
+text-align:center;
+}
+
+.summary{
+display:flex;
+gap:10px;
+}
+
+.summary div{
+flex:1;
+background:#fff;
 padding:10px;
-margin:5px 0;
-border-radius:5px;
-border:1px solid #ccc;
+border-radius:8px;
+text-align:center;
+box-shadow:0 0 5px #ccc;
 }
 </style>
 </head>
@@ -44,8 +67,23 @@ border:1px solid #ccc;
 
 <h2>📊 Tracky Dashboard</h2>
 
+<div class="summary">
+<div>
+<h4>الدخل</h4>
+<span id="income">0</span>
+</div>
+<div>
+<h4>المصروف</h4>
+<span id="expense">0</span>
+</div>
+<div>
+<h4>الصافي</h4>
+<span id="balance">0</span>
+</div>
+</div>
+
 <div class="card">
-<h3>إضافة عملية</h3>
+<h3>➕ إضافة عملية</h3>
 
 <select id="type">
 <option value="income">دخل</option>
@@ -53,45 +91,80 @@ border:1px solid #ccc;
 </select>
 
 <input id="amount" type="number" placeholder="المبلغ">
+
 <input id="note" placeholder="ملاحظة">
 
-<button onclick="add()">إضافة</button>
+<button onclick="addTransaction()">إضافة</button>
 </div>
 
 <div class="card">
-<h3>العمليات</h3>
-<ul id="list"></ul>
+<h3>📋 العمليات</h3>
+<table>
+<thead>
+<tr>
+<th>النوع</th>
+<th>المبلغ</th>
+<th>ملاحظة</th>
+<th>حذف</th>
+</tr>
+</thead>
+<tbody id="list"></tbody>
+</table>
 </div>
 
 <script>
 let data = JSON.parse(localStorage.getItem("tracky")) || [];
 
-function add(){
+function save(){
+localStorage.setItem("tracky",JSON.stringify(data));
+render();
+}
+
+function addTransaction(){
 let type = document.getElementById("type").value;
 let amount = document.getElementById("amount").value;
 let note = document.getElementById("note").value;
 
+if(amount=="")return;
+
 data.push({type,amount,note});
-localStorage.setItem("tracky",JSON.stringify(data));
-show();
+save();
+
+document.getElementById("amount").value="";
+document.getElementById("note").value="";
 }
 
-function show(){
-let list = document.getElementById("list");
-list.innerHTML="";
+function remove(i){
+data.splice(i,1);
+save();
+}
 
-data.forEach((x)=>{
-list.innerHTML += `
-<li>
-${x.type=="income"?"💰 دخل":"💸 مصروف"} -
-${x.amount} جنيه -
-${x.note}
-</li>
+function render(){
+let list="";
+let inc=0;
+let exp=0;
+
+data.forEach((t,i)=>{
+list+=`
+<tr>
+<td>${t.type=="income"?"دخل":"مصروف"}</td>
+<td>${t.amount}</td>
+<td>${t.note}</td>
+<td><button onclick="remove(${i})">🗑</button></td>
+</tr>
 `;
-})
+
+if(t.type=="income")inc+=+t.amount;
+else exp+=+t.amount;
+});
+
+document.getElementById("list").innerHTML=list;
+document.getElementById("income").innerText=inc;
+document.getElementById("expense").innerText=exp;
+document.getElementById("balance").innerText=inc-exp;
 }
 
-show();
+render();
 </script>
 
 </body>
