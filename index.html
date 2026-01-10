@@ -2,167 +2,151 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>Tracky</title>
+<title>Tracky Premium</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
 <style>
-*{box-sizing:border-box}
-
 body{
- margin:0;
- font-family:-apple-system,BlinkMacSystemFont;
- background:linear-gradient(135deg,#020617,#0f172a,#020617);
- color:white;
- direction:rtl;
+margin:0;
+font-family:system-ui;
+background:linear-gradient(135deg,#0f172a,#020617);
+color:#fff;
 }
 
-/* HEADER */
-header{
- padding:18px;
- display:flex;
- justify-content:space-between;
- align-items:center;
+.app{
+max-width:420px;
+margin:auto;
+padding:20px;
 }
 
-.app-name{
- font-size:20px;
- font-weight:700;
- letter-spacing:.5px;
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
 }
 
-.bell{
- position:relative;
- font-size:24px;
+.header h2{
+margin:0;
 }
 
-.dot{
- position:absolute;
- top:0;
- right:0;
- width:10px;
- height:10px;
- background:#f43f5e;
- border-radius:50%;
+.notify{
+position:relative;
+font-size:22px;
 }
 
-/* CARDS */
+.notify span{
+position:absolute;
+top:-5px;
+right:-5px;
+background:red;
+width:10px;
+height:10px;
+border-radius:50%;
+}
+
 .cards{
- padding:15px;
- display:grid;
- gap:18px;
+display:grid;
+grid-template-columns:1fr;
+gap:15px;
 }
 
 .card{
- background:linear-gradient(135deg,#2563eb,#1e40af);
- padding:25px;
- border-radius:22px;
- display:flex;
- justify-content:space-between;
- align-items:center;
- box-shadow:0 15px 40px rgba(0,0,0,.4);
+background:linear-gradient(135deg,#2563eb,#1e3a8a);
+padding:18px;
+border-radius:16px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+font-size:18px;
 }
 
-.card h1{
- margin:0;
- font-size:38px;
+.card i{
+font-size:32px;
 }
 
-.card span{
- opacity:.8;
-}
-
-.big-icon{
- font-size:52px;
-}
-
-/* FORM */
 .form{
- margin:15px;
- background:#020617;
- padding:22px;
- border-radius:22px;
- box-shadow:0 0 30px rgba(0,0,0,.5);
-}
-
-.form h3{
- margin:0 0 12px;
+margin-top:25px;
+background:#020617;
+padding:15px;
+border-radius:16px;
 }
 
 input,select{
- width:100%;
- padding:14px;
- margin-top:10px;
- border-radius:14px;
- border:none;
- background:#111827;
- color:white;
- font-size:15px;
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+margin-bottom:10px;
+background:#111827;
+color:white;
 }
 
 button{
- width:100%;
- padding:14px;
- margin-top:15px;
- background:linear-gradient(135deg,#3b82f6,#2563eb);
- border:none;
- border-radius:16px;
- color:white;
- font-size:16px;
- font-weight:600;
+width:100%;
+padding:14px;
+border:none;
+border-radius:12px;
+background:#2563eb;
+color:white;
+font-size:16px;
 }
 
-/* LIST */
 .list{
- margin:15px;
- background:#020617;
- padding:20px;
- border-radius:22px;
+margin-top:20px;
 }
 
-.row{
- display:flex;
- justify-content:space-between;
- padding:10px 0;
- border-bottom:1px solid #1f2933;
+.item{
+background:#020617;
+padding:12px;
+border-radius:12px;
+display:flex;
+justify-content:space-between;
+margin-bottom:8px;
 }
-
-.row:last-child{border:none}
 </style>
 </head>
 
 <body>
 
-<header>
- <div class="app-name">💎 Tracky</div>
- <div class="bell">
-  🔔
-  <div class="dot"></div>
- </div>
-</header>
+<div class="app">
+
+<div class="header">
+<h2>💎 Tracky</h2>
+
+<div class="notify">
+<i class="fa-solid fa-bell"></i>
+<span></span>
+</div>
+</div>
 
 <div class="cards">
 
 <div class="card">
- <div>
-  <span>الدخل</span>
-  <h1 id="in">0</h1>
- </div>
- <div class="big-icon">💰</div>
+<div>
+<i class="fa-solid fa-sack-dollar"></i>
+الدخل
+</div>
+<b id="in">0</b>
 </div>
 
 <div class="card">
- <div>
-  <span>المصروف</span>
-  <h1 id="out">0</h1>
- </div>
- <div class="big-icon">💸</div>
+<div>
+<i class="fa-solid fa-money-bill-wave"></i>
+المصروف
+</div>
+<b id="out">0</b>
 </div>
 
 <div class="card">
- <div>
-  <span>الصافي</span>
-  <h1 id="net">0</h1>
- </div>
- <div class="big-icon">📊</div>
+<div>
+<i class="fa-solid fa-chart-line"></i>
+الصافي
+</div>
+<b id="net">0</b>
 </div>
 
 </div>
@@ -175,55 +159,46 @@ button{
 <option value="out">مصروف</option>
 </select>
 
-<input id="amount" type="number" placeholder="المبلغ">
+<input id="amount" placeholder="المبلغ">
+
 <input id="note" placeholder="ملاحظة">
 
 <button onclick="add()">إضافة</button>
 </div>
 
-<div class="list" id="list">
-<h3>📜 العمليات</h3>
+<div class="list" id="list"></div>
+
 </div>
 
 <script>
-let data=JSON.parse(localStorage.getItem("t"))||[];
-
-function save(){
- localStorage.setItem("t",JSON.stringify(data));
-}
-
-function draw(){
- let i=0,o=0;
- list.innerHTML="<h3>📜 العمليات</h3>";
-
- data.forEach((e,n)=>{
-  e.t=="in"?i+=e.a:o+=e.a;
-
-  list.innerHTML+=`
-  <div class="row">
-   <span>${e.n||"-"}</span>
-   <span>${e.t=="in"?"➕":"➖"} ${e.a}</span>
-  </div>`;
- });
-
- in.innerText=i;
- out.innerText=o;
- net.innerText=i-o;
-}
+let income=0,expense=0;
 
 function add(){
- data.push({
-  t:type.value,
-  a:+amount.value,
-  n:note.value
- });
- save();
- draw();
- amount.value="";
- note.value="";
-}
+let t=document.getElementById("type").value;
+let a=+document.getElementById("amount").value;
+let n=document.getElementById("note").value;
 
-draw();
+if(!a) return;
+
+if(t=="in") income+=a;
+else expense+=a;
+
+document.getElementById("in").innerText=income;
+document.getElementById("out").innerText=expense;
+document.getElementById("net").innerText=income-expense;
+
+let div=document.createElement("div");
+div.className="item";
+div.innerHTML=`
+<span>${t=="in"?"➕":"➖"} ${n}</span>
+<b>${a}</b>
+`;
+
+document.getElementById("list").prepend(div);
+
+amount.value="";
+note.value="";
+}
 </script>
 
 </body>
