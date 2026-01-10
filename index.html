@@ -2,105 +2,75 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>Tracky App</title>
+<title>Tracky</title>
 
 <style>
-:root{
-  --bg:#f4f6f8;
-  --card:#fff;
-  --text:#111;
-  --primary:#1e90ff;
-}
-
-.dark{
-  --bg:#0f172a;
-  --card:#1e293b;
-  --text:#fff;
-  --primary:#38bdf8;
-}
-
 body{
-  margin:0;
-  font-family:system-ui;
-  background:var(--bg);
-  color:var(--text);
-  direction:rtl;
+ margin:0;
+ font-family:system-ui;
+ background:linear-gradient(135deg,#0f172a,#1e293b);
+ color:white;
+ direction:rtl;
 }
 
-/* Header */
 header{
-  background:var(--primary);
-  color:white;
-  padding:15px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+ padding:20px;
+ font-size:20px;
+ font-weight:bold;
+ display:flex;
+ justify-content:space-between;
 }
 
-.toggle{
-  background:white;
-  color:black;
-  padding:6px 12px;
-  border-radius:8px;
-  cursor:pointer;
-  border:none;
+.grid{
+ display:grid;
+ grid-template-columns:1fr;
+ gap:15px;
+ padding:15px;
 }
 
-/* Cards */
-.cards{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-  padding:15px;
+.big-card{
+ background:linear-gradient(135deg,#2563eb,#1e40af);
+ padding:25px;
+ border-radius:20px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
 }
 
-.card{
-  background:var(--card);
-  padding:15px;
-  border-radius:12px;
-  text-align:center;
-  box-shadow:0 5px 10px rgba(0,0,0,.1);
+.big-card h1{
+ margin:0;
+ font-size:32px;
+}
+
+.icon{
+ font-size:45px;
 }
 
 /* Form */
-.box{
-  background:var(--card);
-  margin:15px;
-  padding:15px;
-  border-radius:12px;
+.form{
+ background:#111827;
+ margin:15px;
+ padding:20px;
+ border-radius:20px;
 }
 
 input,select{
-  width:100%;
-  padding:10px;
-  margin-top:8px;
-  border-radius:8px;
-  border:1px solid #ccc;
+ width:100%;
+ padding:12px;
+ margin-top:10px;
+ border-radius:10px;
+ border:none;
 }
 
 button{
-  width:100%;
-  margin-top:10px;
-  padding:10px;
-  background:var(--primary);
-  color:white;
-  border:none;
-  border-radius:10px;
-}
-
-/* Table */
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-th,td{
-  padding:8px;
-  text-align:center;
-}
-
-tr{
-  border-bottom:1px solid #ddd;
+ width:100%;
+ margin-top:15px;
+ padding:12px;
+ background:#3b82f6;
+ color:white;
+ border:none;
+ border-radius:12px;
+ font-size:16px;
 }
 </style>
 </head>
@@ -108,33 +78,43 @@ tr{
 <body>
 
 <header>
-  <b>Tracky App 📊</b>
-  <button class="toggle" onclick="toggleMode()">🌙</button>
+ Tracky 💎
 </header>
 
-<div class="cards">
-  <div class="card">
-    <h4>الدخل</h4>
-    <h2 id="income">0</h2>
-  </div>
+<div class="grid">
 
-  <div class="card">
-    <h4>المصروف</h4>
-    <h2 id="expense">0</h2>
-  </div>
-
-  <div class="card">
-    <h4>الصافي</h4>
-    <h2 id="net">0</h2>
-  </div>
+<div class="big-card">
+ <div>
+  <small>الدخل</small>
+  <h1 id="in">0</h1>
+ </div>
+ <div class="icon">💰</div>
 </div>
 
-<div class="box">
+<div class="big-card">
+ <div>
+  <small>المصروف</small>
+  <h1 id="out">0</h1>
+ </div>
+ <div class="icon">💸</div>
+</div>
+
+<div class="big-card">
+ <div>
+  <small>الصافي</small>
+  <h1 id="net">0</h1>
+ </div>
+ <div class="icon">📊</div>
+</div>
+
+</div>
+
+<div class="form">
 <h3>➕ إضافة عملية</h3>
 
 <select id="type">
-  <option value="income">دخل</option>
-  <option value="expense">مصروف</option>
+<option value="in">دخل</option>
+<option value="out">مصروف</option>
 </select>
 
 <input id="amount" type="number" placeholder="المبلغ">
@@ -143,81 +123,35 @@ tr{
 <button onclick="add()">إضافة</button>
 </div>
 
-<div class="box">
-<h3>📄 العمليات</h3>
-
-<table>
-<thead>
-<tr>
-<th>النوع</th>
-<th>المبلغ</th>
-<th>ملاحظة</th>
-<th>حذف</th>
-</tr>
-</thead>
-<tbody id="list"></tbody>
-</table>
-</div>
-
 <script>
-let data = JSON.parse(localStorage.getItem("data")) || [];
+let arr=JSON.parse(localStorage.getItem("x"))||[];
 
 function save(){
- localStorage.setItem("data",JSON.stringify(data));
+ localStorage.setItem("x",JSON.stringify(arr));
 }
 
-function render(){
- let income=0,expense=0;
- list.innerHTML="";
-
- data.forEach((e,i)=>{
-  if(e.type=="income") income+=e.amount;
-  else expense+=e.amount;
-
-  list.innerHTML+=`
-  <tr>
-   <td>${e.type=="income"?"دخل":"مصروف"}</td>
-   <td>${e.amount}</td>
-   <td>${e.note}</td>
-   <td><button onclick="del(${i})">❌</button></td>
-  </tr>`;
+function draw(){
+ let i=0,o=0;
+ arr.forEach(e=>{
+  e.t=="in"?i+=e.a:o+=e.a;
  });
-
- document.getElementById("income").innerText=income;
- document.getElementById("expense").innerText=expense;
- document.getElementById("net").innerText=income-expense;
+ in.innerText=i;
+ out.innerText=o;
+ net.innerText=i-o;
 }
 
 function add(){
- let obj={
-  type:type.value,
-  amount:+amount.value,
-  note:note.value
- };
-
- data.push(obj);
- save();
- render();
+ arr.push({
+  t:type.value,
+  a:+amount.value,
+  n:note.value
+ });
+ save(); draw();
  amount.value="";
  note.value="";
 }
 
-function del(i){
- data.splice(i,1);
- save();
- render();
-}
-
-function toggleMode(){
- document.body.classList.toggle("dark");
- localStorage.mode = 
- document.body.classList.contains("dark")?"dark":"light";
-}
-
-if(localStorage.mode=="dark")
- document.body.classList.add("dark");
-
-render();
+draw();
 </script>
 
 </body>
