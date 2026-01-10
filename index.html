@@ -5,106 +5,164 @@
 <title>Tracky</title>
 
 <style>
+*{box-sizing:border-box}
+
 body{
  margin:0;
- font-family:system-ui;
- background:linear-gradient(135deg,#0f172a,#1e293b);
+ font-family:-apple-system,BlinkMacSystemFont;
+ background:linear-gradient(135deg,#020617,#0f172a,#020617);
  color:white;
  direction:rtl;
 }
 
+/* HEADER */
 header{
- padding:20px;
- font-size:20px;
- font-weight:bold;
- display:flex;
- justify-content:space-between;
-}
-
-.grid{
- display:grid;
- grid-template-columns:1fr;
- gap:15px;
- padding:15px;
-}
-
-.big-card{
- background:linear-gradient(135deg,#2563eb,#1e40af);
- padding:25px;
- border-radius:20px;
+ padding:18px;
  display:flex;
  justify-content:space-between;
  align-items:center;
 }
 
-.big-card h1{
+.app-name{
+ font-size:20px;
+ font-weight:700;
+ letter-spacing:.5px;
+}
+
+.bell{
+ position:relative;
+ font-size:24px;
+}
+
+.dot{
+ position:absolute;
+ top:0;
+ right:0;
+ width:10px;
+ height:10px;
+ background:#f43f5e;
+ border-radius:50%;
+}
+
+/* CARDS */
+.cards{
+ padding:15px;
+ display:grid;
+ gap:18px;
+}
+
+.card{
+ background:linear-gradient(135deg,#2563eb,#1e40af);
+ padding:25px;
+ border-radius:22px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ box-shadow:0 15px 40px rgba(0,0,0,.4);
+}
+
+.card h1{
  margin:0;
- font-size:32px;
+ font-size:38px;
 }
 
-.icon{
- font-size:45px;
+.card span{
+ opacity:.8;
 }
 
-/* Form */
+.big-icon{
+ font-size:52px;
+}
+
+/* FORM */
 .form{
- background:#111827;
  margin:15px;
- padding:20px;
- border-radius:20px;
+ background:#020617;
+ padding:22px;
+ border-radius:22px;
+ box-shadow:0 0 30px rgba(0,0,0,.5);
+}
+
+.form h3{
+ margin:0 0 12px;
 }
 
 input,select{
  width:100%;
- padding:12px;
+ padding:14px;
  margin-top:10px;
- border-radius:10px;
+ border-radius:14px;
  border:none;
+ background:#111827;
+ color:white;
+ font-size:15px;
 }
 
 button{
  width:100%;
+ padding:14px;
  margin-top:15px;
- padding:12px;
- background:#3b82f6;
- color:white;
+ background:linear-gradient(135deg,#3b82f6,#2563eb);
  border:none;
- border-radius:12px;
+ border-radius:16px;
+ color:white;
  font-size:16px;
+ font-weight:600;
 }
+
+/* LIST */
+.list{
+ margin:15px;
+ background:#020617;
+ padding:20px;
+ border-radius:22px;
+}
+
+.row{
+ display:flex;
+ justify-content:space-between;
+ padding:10px 0;
+ border-bottom:1px solid #1f2933;
+}
+
+.row:last-child{border:none}
 </style>
 </head>
 
 <body>
 
 <header>
- Tracky 💎
+ <div class="app-name">💎 Tracky</div>
+ <div class="bell">
+  🔔
+  <div class="dot"></div>
+ </div>
 </header>
 
-<div class="grid">
+<div class="cards">
 
-<div class="big-card">
+<div class="card">
  <div>
-  <small>الدخل</small>
+  <span>الدخل</span>
   <h1 id="in">0</h1>
  </div>
- <div class="icon">💰</div>
+ <div class="big-icon">💰</div>
 </div>
 
-<div class="big-card">
+<div class="card">
  <div>
-  <small>المصروف</small>
+  <span>المصروف</span>
   <h1 id="out">0</h1>
  </div>
- <div class="icon">💸</div>
+ <div class="big-icon">💸</div>
 </div>
 
-<div class="big-card">
+<div class="card">
  <div>
-  <small>الصافي</small>
+  <span>الصافي</span>
   <h1 id="net">0</h1>
  </div>
- <div class="icon">📊</div>
+ <div class="big-icon">📊</div>
 </div>
 
 </div>
@@ -123,30 +181,44 @@ button{
 <button onclick="add()">إضافة</button>
 </div>
 
+<div class="list" id="list">
+<h3>📜 العمليات</h3>
+</div>
+
 <script>
-let arr=JSON.parse(localStorage.getItem("x"))||[];
+let data=JSON.parse(localStorage.getItem("t"))||[];
 
 function save(){
- localStorage.setItem("x",JSON.stringify(arr));
+ localStorage.setItem("t",JSON.stringify(data));
 }
 
 function draw(){
  let i=0,o=0;
- arr.forEach(e=>{
+ list.innerHTML="<h3>📜 العمليات</h3>";
+
+ data.forEach((e,n)=>{
   e.t=="in"?i+=e.a:o+=e.a;
+
+  list.innerHTML+=`
+  <div class="row">
+   <span>${e.n||"-"}</span>
+   <span>${e.t=="in"?"➕":"➖"} ${e.a}</span>
+  </div>`;
  });
+
  in.innerText=i;
  out.innerText=o;
  net.innerText=i-o;
 }
 
 function add(){
- arr.push({
+ data.push({
   t:type.value,
   a:+amount.value,
   n:note.value
  });
- save(); draw();
+ save();
+ draw();
  amount.value="";
  note.value="";
 }
