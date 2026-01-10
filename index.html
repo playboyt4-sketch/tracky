@@ -6,73 +6,104 @@
 
 <style>
 body{
-background:#0b1220;
-font-family:tahoma;
-color:white;
 margin:0;
-padding:20px;
+font-family:tahoma;
+background:#0b1220;
+color:white;
 }
 
-/* الهيدر */
+/* ===== HEADER ===== */
 .header{
 display:flex;
 justify-content:space-between;
 align-items:center;
-font-size:26px;
+padding:15px 20px;
+font-size:22px;
 font-weight:bold;
-margin-bottom:15px;
 }
 
-/* زر اللغة */
-.lang-btn{
+/* ===== LANGUAGE ===== */
+.lang{
 background:#1f2933;
-padding:6px 12px;
-border-radius:10px;
-cursor:pointer;
+padding:6px 14px;
+border-radius:12px;
 font-size:14px;
+cursor:pointer;
 }
 
-/* الرصيد */
-.balance-box{
+/* ===== BALANCE ===== */
+.balance-card{
+margin:15px;
 background:#121b30;
-padding:15px;
-border-radius:15px;
+border-radius:18px;
+padding:20px;
 text-align:center;
-margin-bottom:10px;
+font-size:26px;
+position:relative;
 }
 
 .eye{
+position:absolute;
+left:20px;
+top:50%;
+transform:translateY(-50%);
+opacity:.4;
 cursor:pointer;
-margin-right:10px;
 }
 
-/* تنبيهات */
-.alert{
+/* ===== ALERTS ===== */
+.alert-card{
+margin:12px 15px;
 background:#0f172a;
-padding:12px;
-border-radius:12px;
-margin-bottom:10px;
-font-size:14px;
+border-radius:18px;
+padding:15px;
 }
 
-/* زر الإضافة */
-.add-btn{
-width:140px;
-height:55px;
-border-radius:15px;
-background:#2563eb;
+.alert-title{
+font-weight:bold;
+margin-bottom:8px;
+}
+
+/* ===== ACTION BUTTONS ===== */
+.actions{
 display:flex;
-align-items:center;
-justify-content:center;
-font-size:20px;
-position:fixed;
-bottom:90px;
-left:50%;
-transform:translateX(-50%);
+gap:12px;
+margin:15px;
+}
+
+.action-btn{
+flex:1;
+background:#2563eb;
+padding:18px;
+border-radius:18px;
+text-align:center;
+font-size:16px;
 cursor:pointer;
 }
 
-/* نافذة منبثقة */
+/* ===== BOTTOM NAV ===== */
+.bottom-nav{
+position:fixed;
+bottom:0;
+right:0;
+left:0;
+background:#111827;
+display:flex;
+justify-content:space-around;
+padding:10px 0;
+font-size:12px;
+}
+
+.nav-item{
+text-align:center;
+opacity:.6;
+}
+
+.nav-item.active{
+opacity:1;
+}
+
+/* ===== MODAL ===== */
 .modal{
 position:fixed;
 top:0;
@@ -87,16 +118,16 @@ justify-content:center;
 
 .box{
 background:#111827;
-padding:20px;
-border-radius:15px;
 width:90%;
 max-width:400px;
+border-radius:18px;
+padding:20px;
 }
 
 .select{
 background:#1f2933;
-padding:10px;
-border-radius:10px;
+padding:12px;
+border-radius:12px;
 margin:8px 0;
 cursor:pointer;
 }
@@ -104,16 +135,16 @@ cursor:pointer;
 input{
 width:100%;
 padding:10px;
+border-radius:12px;
 border:none;
-border-radius:10px;
 margin-top:10px;
 }
 
 button{
 width:100%;
-padding:10px;
+padding:12px;
 border:none;
-border-radius:10px;
+border-radius:12px;
 background:#2563eb;
 color:white;
 margin-top:10px;
@@ -123,111 +154,64 @@ margin-top:10px;
 
 <body>
 
-<!-- الهيدر -->
+<!-- HEADER -->
 <div class="header">
 Tracky 💎
-<div class="lang-btn" onclick="toggleLang()">AR / EN</div>
+<div class="lang" onclick="toggleLang()">AR / EN</div>
 </div>
 
-<!-- الرصيد -->
-<div class="balance-box">
-<span class="eye" onclick="toggleBalance()">👁</span>
+<!-- BALANCE -->
+<div class="balance-card">
+<span class="eye" onclick="toggleBalance()">◉</span>
 <span id="balance">****</span>
 </div>
 
-<!-- تنبيهات مالية -->
-<div class="alert">
-💰 تنبيهات مالية  
-<br>
-• قسط بعد يومين  
-<br>
-• اشتراك الاستضافة بعد 3 أيام
+<!-- FINANCIAL ALERTS -->
+<div class="alert-card">
+<div class="alert-title">💰 تنبيهات مالية</div>
+• قسط بعد يومين<br>
+• اشتراك بعد 3 أيام
 </div>
 
-<!-- تنبيهات مواعيد -->
-<div class="alert">
-📅 مواعيد وأحداث  
-<br>
-• كشف العيادة غدًا  
-<br>
+<!-- EVENTS ALERTS -->
+<div class="alert-card">
+<div class="alert-title">📅 مواعيد وأحداث</div>
+• كشف العيادة غداً<br>
 • اجتماع الساعة 6
 </div>
 
-<!-- زر الإضافة -->
-<div class="add-btn" onclick="openType()" id="addText">
-إضافة
+<!-- ACTIONS -->
+<div class="actions">
+<div class="action-btn" onclick="openType()">➕ إضافة عملية</div>
+<div class="action-btn" onclick="openEvent()">⏰ إضافة موعد</div>
 </div>
 
-<!-- اختيار نوع العملية -->
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+<div class="nav-item active">🏠<br>الرئيسية</div>
+<div class="nav-item">💰<br>الإيرادات</div>
+<div class="nav-item">💸<br>المصروفات</div>
+<div class="nav-item">🔔<br>التنبيهات</div>
+<div class="nav-item">📆<br>المستحقات</div>
+</div>
+
+<!-- TYPE -->
 <div class="modal" id="typeBox">
 <div class="box">
 <h3>اختر العملية</h3>
-<div class="select" onclick="openIncome()">➕ إيراد</div>
-<div class="select">➖ مصروف</div>
+<div class="select" onclick="openIncome()">إيراد</div>
+<div class="select">مصروف</div>
 <button onclick="closeAll()">إغلاق</button>
 </div>
 </div>
 
-<!-- الإيرادات -->
-<div class="modal" id="incomeBox">
+<!-- EVENTS -->
+<div class="modal" id="eventBox">
 <div class="box">
-<h3>الإيرادات</h3>
-<div class="select" onclick="openTeach()">🎓 التدريس الجامعي</div>
-<div class="select" onclick="openClinic()">🏥 العيادة</div>
-<div class="select" onclick="openForm()">💰 إيرادات أخرى</div>
-<button onclick="closeAll()">رجوع</button>
-</div>
-</div>
-
-<!-- التدريس -->
-<div class="modal" id="teachBox">
-<div class="box">
-<h3>التدريس الجامعي</h3>
-<div class="select" onclick="openForm()">الفرقة الأولى</div>
-<div class="select" onclick="openForm()">الفرقة الثانية</div>
-<div class="select" onclick="openForm()">الفرقة الثالثة</div>
-<div class="select" onclick="openForm()">الفرقة الرابعة</div>
-
-<p>التكاليف:</p>
-<ul>
-<li>مرتبات</li>
-<li>اشتراك الدومين</li>
-<li>اشتراك الاستضافة</li>
-<li>تكاليف أخرى</li>
-</ul>
-
-<button onclick="closeAll()">رجوع</button>
-</div>
-</div>
-
-<!-- العيادة -->
-<div class="modal" id="clinicBox">
-<div class="box">
-<h3>العيادة</h3>
-<div class="select" onclick="openForm()">المركز</div>
-<div class="select" onclick="openForm()">الأدوية</div>
-<div class="select" onclick="openForm()">الخاص</div>
-<div class="select" onclick="openForm()">المستشفى</div>
-<div class="select" onclick="openForm()">الجيم</div>
-
-<p>التكاليف:</p>
-<ul>
-<li>مرتبات</li>
-<li>إيجار</li>
-<li>كهرباء</li>
-<li>مستلزمات أخرى</li>
-</ul>
-
-<button onclick="closeAll()">رجوع</button>
-</div>
-</div>
-
-<!-- فورم الإضافة -->
-<div class="modal" id="formBox">
-<div class="box">
-<h3>إضافة عملية</h3>
-<input type="number" placeholder="المبلغ">
-<input type="file">
+<h3>إضافة موعد</h3>
+<input placeholder="اسم الحدث">
+<input type="date">
+<input type="time">
 <button>حفظ</button>
 <button onclick="closeAll()">إلغاء</button>
 </div>
@@ -235,42 +219,30 @@ Tracky 💎
 
 <script>
 let shown=false;
-let arabic=true;
+let ar=true;
 
 function toggleBalance(){
 let b=document.getElementById("balance");
-if(shown){
-b.innerText="****";
-}else{
-b.innerText="0 ج";
-}
+b.innerText = shown ? "****" : "0 ج";
 shown=!shown;
 }
 
-/* اللغة */
 function toggleLang(){
-let add=document.getElementById("addText");
-if(arabic){
-add.innerText="Add";
+if(ar){
 document.documentElement.lang="en";
 document.documentElement.dir="ltr";
 }else{
-add.innerText="إضافة";
 document.documentElement.lang="ar";
 document.documentElement.dir="rtl";
 }
-arabic=!arabic;
+ar=!ar;
 }
 
-/* فتح النوافذ */
 function openType(){closeAll();typeBox.style.display="flex";}
-function openIncome(){closeAll();incomeBox.style.display="flex";}
-function openTeach(){closeAll();teachBox.style.display="flex";}
-function openClinic(){closeAll();clinicBox.style.display="flex";}
-function openForm(){closeAll();formBox.style.display="flex";}
+function openEvent(){closeAll();eventBox.style.display="flex";}
 
 function closeAll(){
-document.querySelectorAll('.modal').forEach(m=>{
+document.querySelectorAll(".modal").forEach(m=>{
 m.style.display="none";
 });
 }
