@@ -1,203 +1,211 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tracky Premium</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
 <style>
 body{
 margin:0;
-font-family:system-ui;
-background:linear-gradient(135deg,#0f172a,#020617);
+font-family:Arial;
+background:#0c1220;
 color:#fff;
 }
 
-.app{
-max-width:420px;
-margin:auto;
-padding:20px;
-}
-
-.header{
+header{
 display:flex;
 justify-content:space-between;
 align-items:center;
-margin-bottom:20px;
-}
-
-.header h2{
-margin:0;
-}
-
-.notify{
-position:relative;
+padding:15px;
 font-size:22px;
+font-weight:bold;
 }
 
-.notify span{
-position:absolute;
-top:-5px;
-right:-5px;
+.badge{
 background:red;
 width:10px;
 height:10px;
 border-radius:50%;
+position:absolute;
+top:0;
+right:0;
 }
 
 .cards{
-display:grid;
-grid-template-columns:1fr;
-gap:15px;
+padding:10px;
 }
 
 .card{
-background:linear-gradient(135deg,#2563eb,#1e3a8a);
-padding:18px;
-border-radius:16px;
+background:linear-gradient(135deg,#2563eb,#1e40af);
+border-radius:18px;
+padding:15px;
+margin-bottom:10px;
 display:flex;
 justify-content:space-between;
 align-items:center;
-font-size:18px;
+font-size:20px;
 }
 
-.card i{
-font-size:32px;
+.icon{
+font-size:28px;
 }
 
-.form{
-margin-top:25px;
-background:#020617;
+.section{
+background:#0f172a;
+margin:15px;
+border-radius:20px;
 padding:15px;
-border-radius:16px;
 }
 
-input,select{
+.section h2{
+margin-top:0;
+}
+
+input,select,button{
 width:100%;
 padding:12px;
-border:none;
-border-radius:10px;
-margin-bottom:10px;
-background:#111827;
-color:white;
-}
-
-button{
-width:100%;
-padding:14px;
+margin-top:10px;
 border:none;
 border-radius:12px;
-background:#2563eb;
-color:white;
 font-size:16px;
 }
 
-.list{
-margin-top:20px;
+button{
+background:#2563eb;
+color:white;
+font-weight:bold;
 }
 
-.item{
-background:#020617;
-padding:12px;
-border-radius:12px;
+.tabs{
 display:flex;
-justify-content:space-between;
-margin-bottom:8px;
+justify-content:space-around;
+background:#020617;
+padding:10px;
+position:fixed;
+bottom:0;
+width:100%;
+}
+
+.tab{
+font-size:14px;
+text-align:center;
+}
+
+.tab span{
+display:block;
+font-size:22px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="app">
-
-<div class="header">
-<h2>💎 Tracky</h2>
-
-<div class="notify">
-<i class="fa-solid fa-bell"></i>
-<span></span>
-</div>
-</div>
+<header>
+<div>💎 Tracky</div>
+<div style="position:relative">🔔<span class="badge"></span></div>
+</header>
 
 <div class="cards">
-
 <div class="card">
-<div>
-<i class="fa-solid fa-sack-dollar"></i>
-الدخل
-</div>
-<b id="in">0</b>
+<div class="icon">💰</div>
+<div>الدخل</div>
+<div id="income">0</div>
 </div>
 
 <div class="card">
-<div>
-<i class="fa-solid fa-money-bill-wave"></i>
-المصروف
-</div>
-<b id="out">0</b>
+<div class="icon">💸</div>
+<div>المصروفات</div>
+<div id="expense">0</div>
 </div>
 
 <div class="card">
-<div>
-<i class="fa-solid fa-chart-line"></i>
-الصافي
+<div class="icon">📊</div>
+<div>الرصيد</div>
+<div id="balance">0</div>
 </div>
-<b id="net">0</b>
-</div>
-
 </div>
 
-<div class="form">
-<h3>➕ إضافة عملية</h3>
+<div class="section">
+<h2>➕ إضافة عملية</h2>
 
 <select id="type">
-<option value="in">دخل</option>
-<option value="out">مصروف</option>
+<option value="income">دخل</option>
+<option value="expense">مصروف</option>
 </select>
 
-<input id="amount" placeholder="المبلغ">
+<select id="category">
+<option>اختر التصنيف</option>
+</select>
 
-<input id="note" placeholder="ملاحظة">
+<input type="number" id="amount" placeholder="المبلغ">
+<input type="text" id="note" placeholder="ملاحظة">
 
 <button onclick="add()">إضافة</button>
 </div>
 
-<div class="list" id="list"></div>
-
+<div class="tabs">
+<div class="tab"><span>🏠</span>الرئيسية</div>
+<div class="tab"><span>💰</span>الدخل</div>
+<div class="tab"><span>💸</span>المصروفات</div>
+<div class="tab"><span>🔔</span>التنبيهات</div>
 </div>
 
 <script>
-let income=0,expense=0;
+let totalIncome=0;
+let totalExpense=0;
+
+const incomeCats=[
+"التدريس الجامعي",
+"المنصة التعليمية",
+"الدروس الخاصة",
+"المرتبات",
+"دخل إضافي"
+];
+
+const expenseCats=[
+"البيت",
+"السيارة",
+"ملابس",
+"إنترنت وموبايل",
+"اشتراكات",
+"مصروفات العيادة",
+"دروس داليا",
+"تكاليف أخرى"
+];
+
+document.getElementById("type").onchange=loadCats;
+loadCats();
+
+function loadCats(){
+let t=document.getElementById("type").value;
+let cat=document.getElementById("category");
+cat.innerHTML="";
+let arr=t=="income"?incomeCats:expenseCats;
+arr.forEach(c=>{
+let o=document.createElement("option");
+o.textContent=c;
+cat.appendChild(o);
+});
+}
 
 function add(){
 let t=document.getElementById("type").value;
-let a=+document.getElementById("amount").value;
-let n=document.getElementById("note").value;
+let v=parseFloat(document.getElementById("amount").value);
 
-if(!a) return;
+if(!v)return alert("ادخل مبلغ صحيح");
 
-if(t=="in") income+=a;
-else expense+=a;
+if(t=="income") totalIncome+=v;
+else totalExpense+=v;
 
-document.getElementById("in").innerText=income;
-document.getElementById("out").innerText=expense;
-document.getElementById("net").innerText=income-expense;
+update();
+document.getElementById("amount").value="";
+}
 
-let div=document.createElement("div");
-div.className="item";
-div.innerHTML=`
-<span>${t=="in"?"➕":"➖"} ${n}</span>
-<b>${a}</b>
-`;
-
-document.getElementById("list").prepend(div);
-
-amount.value="";
-note.value="";
+function update(){
+document.getElementById("income").textContent=totalIncome;
+document.getElementById("expense").textContent=totalExpense;
+document.getElementById("balance").textContent=totalIncome-totalExpense;
 }
 </script>
 
