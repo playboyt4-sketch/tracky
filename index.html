@@ -7,38 +7,38 @@
 <style>
 body{
 margin:0;
-font-family:tahoma;
-background:#0b1220;
+font-family:"Segoe UI",sans-serif;
+background:linear-gradient(180deg,#0b1220,#020617);
 color:white;
 }
 
-/* ===== HEADER ===== */
+/* HEADER */
 .header{
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:15px 20px;
+padding:18px;
 font-size:22px;
-font-weight:bold;
+font-weight:600;
 }
 
-/* ===== LANGUAGE ===== */
+/* LANG */
 .lang{
-background:#1f2933;
-padding:6px 14px;
-border-radius:12px;
-font-size:14px;
+background:#1e293b;
+padding:8px 18px;
+border-radius:20px;
+font-size:13px;
 cursor:pointer;
 }
 
-/* ===== BALANCE ===== */
-.balance-card{
+/* BALANCE */
+.balance{
 margin:15px;
-background:#121b30;
-border-radius:18px;
-padding:20px;
+background:#0f172a;
+border-radius:22px;
+padding:25px;
 text-align:center;
-font-size:26px;
+font-size:32px;
 position:relative;
 }
 
@@ -47,104 +47,102 @@ position:absolute;
 left:20px;
 top:50%;
 transform:translateY(-50%);
-opacity:.4;
+width:20px;
+height:20px;
+border-radius:50%;
+border:2px solid #94a3b8;
+opacity:.5;
 cursor:pointer;
 }
 
-/* ===== ALERTS ===== */
-.alert-card{
-margin:12px 15px;
-background:#0f172a;
-border-radius:18px;
-padding:15px;
-}
-
-.alert-title{
-font-weight:bold;
-margin-bottom:8px;
-}
-
-/* ===== ACTION BUTTONS ===== */
-.actions{
-display:flex;
-gap:12px;
+/* ALERTS */
+.card{
 margin:15px;
-}
-
-.action-btn{
-flex:1;
-background:#2563eb;
-padding:18px;
-border-radius:18px;
-text-align:center;
-font-size:16px;
-cursor:pointer;
-}
-
-/* ===== BOTTOM NAV ===== */
-.bottom-nav{
-position:fixed;
-bottom:0;
-right:0;
-left:0;
-background:#111827;
-display:flex;
-justify-content:space-around;
-padding:10px 0;
-font-size:12px;
-}
-
-.nav-item{
-text-align:center;
-opacity:.6;
-}
-
-.nav-item.active{
-opacity:1;
-}
-
-/* ===== MODAL ===== */
-.modal{
-position:fixed;
-top:0;
-left:0;
-right:0;
-bottom:0;
-background:rgba(0,0,0,.7);
-display:none;
-align-items:center;
-justify-content:center;
-}
-
-.box{
-background:#111827;
-width:90%;
-max-width:400px;
-border-radius:18px;
+background:#020617;
+border-radius:22px;
 padding:20px;
 }
 
-.select{
-background:#1f2933;
-padding:12px;
-border-radius:12px;
-margin:8px 0;
+.card h3{
+margin:0 0 10px;
+font-size:18px;
+}
+
+/* ACTIONS */
+.actions{
+display:flex;
+gap:15px;
+margin:15px;
+}
+
+.btn{
+flex:1;
+background:#2563eb;
+padding:18px;
+border-radius:20px;
+text-align:center;
+font-size:17px;
+font-weight:500;
 cursor:pointer;
 }
 
-input{
-width:100%;
-padding:10px;
-border-radius:12px;
-border:none;
-margin-top:10px;
+/* NAV */
+.nav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+background:#020617;
+display:flex;
+justify-content:space-around;
+padding:10px 0;
+font-size:11px;
 }
 
+.nav div{
+opacity:.6;
+text-align:center;
+}
+
+.nav .active{opacity:1}
+
+/* MODAL */
+.modal{
+position:fixed;
+top:0;left:0;right:0;bottom:0;
+background:rgba(0,0,0,.7);
+display:none;
+justify-content:center;
+align-items:center;
+}
+
+.box{
+background:#020617;
+width:90%;
+max-width:400px;
+border-radius:20px;
+padding:20px;
+}
+
+.option{
+background:#1e293b;
+padding:14px;
+border-radius:14px;
+margin:8px 0;
+cursor:pointer;
+}
+input{
+width:100%;
+padding:12px;
+border:none;
+border-radius:12px;
+margin-top:10px;
+}
 button{
 width:100%;
 padding:12px;
 border:none;
-border-radius:12px;
+border-radius:14px;
 background:#2563eb;
 color:white;
 margin-top:10px;
@@ -156,57 +154,57 @@ margin-top:10px;
 
 <!-- HEADER -->
 <div class="header">
-Tracky 💎
 <div class="lang" onclick="toggleLang()">AR / EN</div>
+<div>Tracky 💎</div>
 </div>
 
 <!-- BALANCE -->
-<div class="balance-card">
-<span class="eye" onclick="toggleBalance()">◉</span>
-<span id="balance">****</span>
+<div class="balance">
+<div class="eye" onclick="toggleBalance()"></div>
+<span id="bal">****</span>
 </div>
 
-<!-- FINANCIAL ALERTS -->
-<div class="alert-card">
-<div class="alert-title">💰 تنبيهات مالية</div>
+<!-- FINANCIAL -->
+<div class="card">
+<h3>💰 تنبيهات مالية</h3>
 • قسط بعد يومين<br>
 • اشتراك بعد 3 أيام
 </div>
 
-<!-- EVENTS ALERTS -->
-<div class="alert-card">
-<div class="alert-title">📅 مواعيد وأحداث</div>
-• كشف العيادة غداً<br>
+<!-- EVENTS -->
+<div class="card">
+<h3>📅 مواعيد وأحداث</h3>
+• كشف غداً<br>
 • اجتماع الساعة 6
 </div>
 
 <!-- ACTIONS -->
 <div class="actions">
-<div class="action-btn" onclick="openType()">➕ إضافة عملية</div>
-<div class="action-btn" onclick="openEvent()">⏰ إضافة موعد</div>
+<div class="btn" onclick="openType()">➕ إضافة عملية</div>
+<div class="btn" onclick="openEvent()">⏰ إضافة موعد</div>
 </div>
 
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-<div class="nav-item active">🏠<br>الرئيسية</div>
-<div class="nav-item">💰<br>الإيرادات</div>
-<div class="nav-item">💸<br>المصروفات</div>
-<div class="nav-item">🔔<br>التنبيهات</div>
-<div class="nav-item">📆<br>المستحقات</div>
+<!-- NAV -->
+<div class="nav">
+<div class="active">🏠<br>الرئيسية</div>
+<div>💰<br>الإيرادات</div>
+<div>💸<br>المصروفات</div>
+<div>🔔<br>التنبيهات</div>
+<div>📆<br>المستحقات</div>
 </div>
 
 <!-- TYPE -->
-<div class="modal" id="typeBox">
+<div class="modal" id="type">
 <div class="box">
 <h3>اختر العملية</h3>
-<div class="select" onclick="openIncome()">إيراد</div>
-<div class="select">مصروف</div>
+<div class="option" onclick="openIncome()">إيراد</div>
+<div class="option">مصروف</div>
 <button onclick="closeAll()">إغلاق</button>
 </div>
 </div>
 
-<!-- EVENTS -->
-<div class="modal" id="eventBox">
+<!-- EVENT -->
+<div class="modal" id="event">
 <div class="box">
 <h3>إضافة موعد</h3>
 <input placeholder="اسم الحدث">
@@ -218,13 +216,12 @@ Tracky 💎
 </div>
 
 <script>
-let shown=false;
-let ar=true;
+let show=false,ar=true;
 
 function toggleBalance(){
-let b=document.getElementById("balance");
-b.innerText = shown ? "****" : "0 ج";
-shown=!shown;
+document.getElementById("bal").innerText=
+show?"****":"0 ج";
+show=!show;
 }
 
 function toggleLang(){
@@ -238,13 +235,12 @@ document.documentElement.dir="rtl";
 ar=!ar;
 }
 
-function openType(){closeAll();typeBox.style.display="flex";}
-function openEvent(){closeAll();eventBox.style.display="flex";}
+function openType(){type.style.display="flex"}
+function openEvent(){event.style.display="flex"}
 
 function closeAll(){
-document.querySelectorAll(".modal").forEach(m=>{
-m.style.display="none";
-});
+type.style.display="none";
+event.style.display="none";
 }
 </script>
 
