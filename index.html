@@ -2,210 +2,277 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tracky Premium</title>
+<title>Tracky</title>
 
 <style>
 body{
+background:#0b1220;
+font-family:tahoma;
+color:white;
 margin:0;
-font-family:Arial;
-background:#0c1220;
-color:#fff;
+padding:20px;
 }
 
-header{
+/* الهيدر */
+.header{
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:15px;
-font-size:22px;
+font-size:26px;
 font-weight:bold;
+margin-bottom:15px;
 }
 
-.badge{
-background:red;
-width:10px;
-height:10px;
-border-radius:50%;
-position:absolute;
-top:0;
-right:0;
+/* زر اللغة */
+.lang-btn{
+background:#1f2933;
+padding:6px 12px;
+border-radius:10px;
+cursor:pointer;
+font-size:14px;
 }
 
-.cards{
-padding:10px;
-}
-
-.card{
-background:linear-gradient(135deg,#2563eb,#1e40af);
-border-radius:18px;
+/* الرصيد */
+.balance-box{
+background:#121b30;
 padding:15px;
+border-radius:15px;
+text-align:center;
 margin-bottom:10px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-font-size:20px;
 }
 
-.icon{
-font-size:28px;
+.eye{
+cursor:pointer;
+margin-right:10px;
 }
 
-.section{
+/* تنبيهات */
+.alert{
 background:#0f172a;
-margin:15px;
-border-radius:20px;
-padding:15px;
-}
-
-.section h2{
-margin-top:0;
-}
-
-input,select,button{
-width:100%;
 padding:12px;
-margin-top:10px;
-border:none;
 border-radius:12px;
-font-size:16px;
+margin-bottom:10px;
+font-size:14px;
+}
+
+/* زر الإضافة */
+.add-btn{
+width:140px;
+height:55px;
+border-radius:15px;
+background:#2563eb;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:20px;
+position:fixed;
+bottom:90px;
+left:50%;
+transform:translateX(-50%);
+cursor:pointer;
+}
+
+/* نافذة منبثقة */
+.modal{
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:rgba(0,0,0,.7);
+display:none;
+align-items:center;
+justify-content:center;
+}
+
+.box{
+background:#111827;
+padding:20px;
+border-radius:15px;
+width:90%;
+max-width:400px;
+}
+
+.select{
+background:#1f2933;
+padding:10px;
+border-radius:10px;
+margin:8px 0;
+cursor:pointer;
+}
+
+input{
+width:100%;
+padding:10px;
+border:none;
+border-radius:10px;
+margin-top:10px;
 }
 
 button{
+width:100%;
+padding:10px;
+border:none;
+border-radius:10px;
 background:#2563eb;
 color:white;
-font-weight:bold;
-}
-
-.tabs{
-display:flex;
-justify-content:space-around;
-background:#020617;
-padding:10px;
-position:fixed;
-bottom:0;
-width:100%;
-}
-
-.tab{
-font-size:14px;
-text-align:center;
-}
-
-.tab span{
-display:block;
-font-size:22px;
+margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-<div>💎 Tracky</div>
-<div style="position:relative">🔔<span class="badge"></span></div>
-</header>
-
-<div class="cards">
-<div class="card">
-<div class="icon">💰</div>
-<div>الدخل</div>
-<div id="income">0</div>
+<!-- الهيدر -->
+<div class="header">
+Tracky 💎
+<div class="lang-btn" onclick="toggleLang()">AR / EN</div>
 </div>
 
-<div class="card">
-<div class="icon">💸</div>
-<div>المصروفات</div>
-<div id="expense">0</div>
+<!-- الرصيد -->
+<div class="balance-box">
+<span class="eye" onclick="toggleBalance()">👁</span>
+<span id="balance">****</span>
 </div>
 
-<div class="card">
-<div class="icon">📊</div>
-<div>الرصيد</div>
-<div id="balance">0</div>
+<!-- تنبيهات مالية -->
+<div class="alert">
+💰 تنبيهات مالية  
+<br>
+• قسط بعد يومين  
+<br>
+• اشتراك الاستضافة بعد 3 أيام
+</div>
+
+<!-- تنبيهات مواعيد -->
+<div class="alert">
+📅 مواعيد وأحداث  
+<br>
+• كشف العيادة غدًا  
+<br>
+• اجتماع الساعة 6
+</div>
+
+<!-- زر الإضافة -->
+<div class="add-btn" onclick="openType()" id="addText">
+إضافة
+</div>
+
+<!-- اختيار نوع العملية -->
+<div class="modal" id="typeBox">
+<div class="box">
+<h3>اختر العملية</h3>
+<div class="select" onclick="openIncome()">➕ إيراد</div>
+<div class="select">➖ مصروف</div>
+<button onclick="closeAll()">إغلاق</button>
 </div>
 </div>
 
-<div class="section">
-<h2>➕ إضافة عملية</h2>
-
-<select id="type">
-<option value="income">دخل</option>
-<option value="expense">مصروف</option>
-</select>
-
-<select id="category">
-<option>اختر التصنيف</option>
-</select>
-
-<input type="number" id="amount" placeholder="المبلغ">
-<input type="text" id="note" placeholder="ملاحظة">
-
-<button onclick="add()">إضافة</button>
+<!-- الإيرادات -->
+<div class="modal" id="incomeBox">
+<div class="box">
+<h3>الإيرادات</h3>
+<div class="select" onclick="openTeach()">🎓 التدريس الجامعي</div>
+<div class="select" onclick="openClinic()">🏥 العيادة</div>
+<div class="select" onclick="openForm()">💰 إيرادات أخرى</div>
+<button onclick="closeAll()">رجوع</button>
+</div>
 </div>
 
-<div class="tabs">
-<div class="tab"><span>🏠</span>الرئيسية</div>
-<div class="tab"><span>💰</span>الدخل</div>
-<div class="tab"><span>💸</span>المصروفات</div>
-<div class="tab"><span>🔔</span>التنبيهات</div>
+<!-- التدريس -->
+<div class="modal" id="teachBox">
+<div class="box">
+<h3>التدريس الجامعي</h3>
+<div class="select" onclick="openForm()">الفرقة الأولى</div>
+<div class="select" onclick="openForm()">الفرقة الثانية</div>
+<div class="select" onclick="openForm()">الفرقة الثالثة</div>
+<div class="select" onclick="openForm()">الفرقة الرابعة</div>
+
+<p>التكاليف:</p>
+<ul>
+<li>مرتبات</li>
+<li>اشتراك الدومين</li>
+<li>اشتراك الاستضافة</li>
+<li>تكاليف أخرى</li>
+</ul>
+
+<button onclick="closeAll()">رجوع</button>
+</div>
+</div>
+
+<!-- العيادة -->
+<div class="modal" id="clinicBox">
+<div class="box">
+<h3>العيادة</h3>
+<div class="select" onclick="openForm()">المركز</div>
+<div class="select" onclick="openForm()">الأدوية</div>
+<div class="select" onclick="openForm()">الخاص</div>
+<div class="select" onclick="openForm()">المستشفى</div>
+<div class="select" onclick="openForm()">الجيم</div>
+
+<p>التكاليف:</p>
+<ul>
+<li>مرتبات</li>
+<li>إيجار</li>
+<li>كهرباء</li>
+<li>مستلزمات أخرى</li>
+</ul>
+
+<button onclick="closeAll()">رجوع</button>
+</div>
+</div>
+
+<!-- فورم الإضافة -->
+<div class="modal" id="formBox">
+<div class="box">
+<h3>إضافة عملية</h3>
+<input type="number" placeholder="المبلغ">
+<input type="file">
+<button>حفظ</button>
+<button onclick="closeAll()">إلغاء</button>
+</div>
 </div>
 
 <script>
-let totalIncome=0;
-let totalExpense=0;
+let shown=false;
+let arabic=true;
 
-const incomeCats=[
-"التدريس الجامعي",
-"المنصة التعليمية",
-"الدروس الخاصة",
-"المرتبات",
-"دخل إضافي"
-];
+function toggleBalance(){
+let b=document.getElementById("balance");
+if(shown){
+b.innerText="****";
+}else{
+b.innerText="0 ج";
+}
+shown=!shown;
+}
 
-const expenseCats=[
-"البيت",
-"السيارة",
-"ملابس",
-"إنترنت وموبايل",
-"اشتراكات",
-"مصروفات العيادة",
-"دروس داليا",
-"تكاليف أخرى"
-];
+/* اللغة */
+function toggleLang(){
+let add=document.getElementById("addText");
+if(arabic){
+add.innerText="Add";
+document.documentElement.lang="en";
+document.documentElement.dir="ltr";
+}else{
+add.innerText="إضافة";
+document.documentElement.lang="ar";
+document.documentElement.dir="rtl";
+}
+arabic=!arabic;
+}
 
-document.getElementById("type").onchange=loadCats;
-loadCats();
+/* فتح النوافذ */
+function openType(){closeAll();typeBox.style.display="flex";}
+function openIncome(){closeAll();incomeBox.style.display="flex";}
+function openTeach(){closeAll();teachBox.style.display="flex";}
+function openClinic(){closeAll();clinicBox.style.display="flex";}
+function openForm(){closeAll();formBox.style.display="flex";}
 
-function loadCats(){
-let t=document.getElementById("type").value;
-let cat=document.getElementById("category");
-cat.innerHTML="";
-let arr=t=="income"?incomeCats:expenseCats;
-arr.forEach(c=>{
-let o=document.createElement("option");
-o.textContent=c;
-cat.appendChild(o);
+function closeAll(){
+document.querySelectorAll('.modal').forEach(m=>{
+m.style.display="none";
 });
-}
-
-function add(){
-let t=document.getElementById("type").value;
-let v=parseFloat(document.getElementById("amount").value);
-
-if(!v)return alert("ادخل مبلغ صحيح");
-
-if(t=="income") totalIncome+=v;
-else totalExpense+=v;
-
-update();
-document.getElementById("amount").value="";
-}
-
-function update(){
-document.getElementById("income").textContent=totalIncome;
-document.getElementById("expense").textContent=totalExpense;
-document.getElementById("balance").textContent=totalIncome-totalExpense;
 }
 </script>
 
