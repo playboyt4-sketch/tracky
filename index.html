@@ -3,479 +3,796 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tracky Pro V5</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <title>Tracky Ultimate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        :root { --bg: #0f172a; --surface: #1e293b; --primary: #3b82f6; --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --text: #f8fafc; }
+        :root {
+            --bg-dark: #000000;
+            --glass: rgba(25, 25, 25, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --primary: #0A84FF;
+            --success: #30D158;
+            --danger: #FF453A;
+            --warning: #FF9F0A;
+            --purple: #BF5AF2;
+            --text: #ffffff;
+            --text-sec: #8e8e93;
+        }
+
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: 'Cairo', sans-serif; background-color: var(--bg); color: var(--text); padding-bottom: 90px; }
-
-        /* HEADER & LOCK */
-        #lock-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .pin-dots { display: flex; gap: 15px; margin-bottom: 30px; }
-        .pin-dot { width: 15px; height: 15px; border-radius: 50%; border: 2px solid #94a3b8; }
-        .pin-dot.filled { background: var(--primary); border-color: var(--primary); }
-        .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .num-btn { width: 65px; height: 65px; border-radius: 50%; background: var(--surface); color: white; font-size: 22px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
-
-        .header { padding: 15px 20px; background: rgba(15, 23, 42, 0.95); position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; }
         
-        /* CARDS */
-        .card { background: var(--surface); border-radius: 16px; padding: 15px; margin: 15px; border: 1px solid rgba(255,255,255,0.05); }
-        .balance-card { text-align: center; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
-        .total-amount { font-size: 34px; font-weight: 800; margin: 10px 0; }
-        
-        /* ANALYSIS GRID */
-        .biz-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #334155; font-size: 13px; }
-        .biz-row:last-child { border: none; }
-        .tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: #334155; margin-left: 5px; }
+        body {
+            margin: 0;
+            font-family: 'Cairo', sans-serif;
+            background: black;
+            color: var(--text);
+            padding-bottom: 100px; /* Nav space */
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 10% 20%, rgba(10, 132, 255, 0.15) 0%, transparent 20%),
+                              radial-gradient(circle at 90% 80%, rgba(191, 90, 242, 0.15) 0%, transparent 20%);
+            background-attachment: fixed;
+        }
 
-        /* QUICK ACTIONS */
-        .quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px; }
-        .quick-btn { background: var(--surface); border: 1px solid #334155; padding: 10px 5px; border-radius: 12px; text-align: center; font-size: 11px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        /* --- UI COMPONENTS --- */
+        .header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--glass-border);
+        }
 
-        /* TABS */
-        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 22px;
+            padding: 20px;
+            margin: 15px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Balance Card Special Style */
+        .balance-card {
+            background: linear-gradient(135deg, rgba(28, 28, 30, 0.8) 0%, rgba(10, 10, 10, 0.9) 100%);
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        /* --- GRID MENUS --- */
+        .grid-menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 10px; }
+        .grid-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 18px;
+            padding: 15px 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid transparent;
+        }
+        .grid-item:active { background: rgba(255,255,255,0.1); transform: scale(0.98); }
+        .grid-icon { font-size: 24px; margin-bottom: 8px; display: block; }
+        .grid-label { font-size: 11px; font-weight: 600; opacity: 0.8; }
+
+        /* --- TABS SYSTEM --- */
+        .tab-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* NAV & MODAL */
-        .nav { position: fixed; bottom: 0; width: 100%; background: #0f172a; padding: 10px 0; display: flex; justify-content: space-around; border-top: 1px solid #334155; z-index: 200; }
-        .nav-item { text-align: center; font-size: 10px; opacity: 0.6; transition: 0.3s; }
-        .nav-item.active { opacity: 1; color: var(--primary); transform: translateY(-3px); }
-        .nav-icon { font-size: 20px; margin-bottom: 4px; display: block; }
+        /* --- NAVIGATION --- */
+        .nav {
+            position: fixed; bottom: 20px; left: 20px; right: 20px;
+            background: rgba(20, 20, 20, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 35px;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border: 1px solid rgba(255,255,255,0.1);
+            z-index: 200;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .nav-item { opacity: 0.5; transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; cursor: pointer; }
+        .nav-item i { font-size: 20px; }
+        .nav-item.active { opacity: 1; color: var(--primary); }
 
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; display: none; justify-content: center; align-items: flex-end; }
-        .modal-box { background: var(--surface); width: 100%; max-width: 500px; padding: 25px; border-radius: 25px 25px 0 0; max-height: 90vh; overflow-y: auto; }
+        /* --- FAB (ADD BUTTON) --- */
+        .fab-container {
+            position: fixed; bottom: 80px; width: 100%; display: flex; justify-content: center; z-index: 190; pointer-events: none;
+        }
+        .fab {
+            width: 60px; height: 60px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; color: white;
+            box-shadow: 0 0 20px rgba(10, 132, 255, 0.4);
+            cursor: pointer; pointer-events: auto;
+            transition: 0.3s;
+        }
+        .fab:active { transform: scale(0.9); }
+
+        /* --- MODALS --- */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+            z-index: 1000; display: none;
+            justify-content: center; align-items: flex-end;
+        }
+        .modal-box {
+            background: #1c1c1e;
+            width: 100%; max-width: 500px;
+            border-radius: 30px 30px 0 0;
+            padding: 30px;
+            max-height: 90vh; overflow-y: auto;
+            border-top: 1px solid var(--glass-border);
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        /* --- FORMS & INPUTS --- */
+        input, select, textarea {
+            width: 100%; padding: 16px; margin-bottom: 12px;
+            background: #2c2c2e; border: none; border-radius: 14px;
+            color: white; font-family: 'Cairo'; font-size: 15px; outline: none;
+        }
+        input:focus { background: #3a3a3c; }
         
-        input, select { width: 100%; padding: 14px; background: var(--bg); border: 1px solid #334155; color: white; border-radius: 12px; margin-bottom: 10px; font-family: 'Cairo'; outline: none; }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        .btn { width: 100%; padding: 16px; border-radius: 16px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
         .btn-primary { background: var(--primary); color: white; }
-        .fab { position: fixed; bottom: 85px; left: 20px; width: 55px; height: 55px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 5px 20px rgba(59, 130, 246, 0.4); z-index: 190; cursor: pointer; }
-        
-        .advice-box { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); padding: 10px; border-radius: 8px; font-size: 11px; margin-bottom: 10px; display: none; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-ghost { background: transparent; color: var(--text-sec); font-size: 14px; }
+
+        /* --- LIST ITEMS --- */
+        .list-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .list-row:last-child { border: none; }
+        .tag { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; }
+        .tag-red { background: rgba(255, 69, 58, 0.2); color: var(--danger); }
+        .tag-green { background: rgba(48, 209, 88, 0.2); color: var(--success); }
+
+        /* --- PROGRESS CIRCLE (CAR) --- */
+        .progress-circle { width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(var(--primary) var(--deg), #333 0deg); display: flex; align-items: center; justify-content: center; margin: 0 auto; position: relative;}
+        .progress-inner { width: 100px; height: 100px; background: #1c1c1e; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+        /* --- LOCK SCREEN --- */
+        #lock-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .pin-dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--text-sec); margin: 0 8px; transition:0.2s}
+        .pin-dot.filled { background: white; border-color: white; }
     </style>
 </head>
 <body>
 
     <div id="lock-screen">
-        <h3>Tracky Secure 🔒</h3>
-        <p style="font-size:12px; opacity:0.6; margin-bottom:20px;">أدخل الرمز (الافتراضي 0000)</p>
-        <div class="pin-dots">
+        <div style="font-size: 40px; margin-bottom: 20px;"></div>
+        <h3 style="margin:0 0 30px 0;">Tracky ID</h3>
+        <div style="display:flex; margin-bottom: 40px;">
             <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
         </div>
-        <div class="numpad">
-            <button class="num-btn" onclick="enterPin(1)">1</button>
-            <button class="num-btn" onclick="enterPin(2)">2</button>
-            <button class="num-btn" onclick="enterPin(3)">3</button>
-            <button class="num-btn" onclick="enterPin(4)">4</button>
-            <button class="num-btn" onclick="enterPin(5)">5</button>
-            <button class="num-btn" onclick="enterPin(6)">6</button>
-            <button class="num-btn" onclick="enterPin(7)">7</button>
-            <button class="num-btn" onclick="enterPin(8)">8</button>
-            <button class="num-btn" onclick="enterPin(9)">9</button>
-            <button class="num-btn" style="visibility:hidden"></button>
-            <button class="num-btn" onclick="enterPin(0)">0</button>
-            <button class="num-btn" style="color:#ef4444" onclick="clearPin()">⌫</button>
+        <div style="display:grid; grid-template-columns: repeat(3, 80px); gap: 20px;">
+            <div class="btn btn-ghost" style="font-size:24px; border-radius:50%; background:rgba(255,255,255,0.1); height:80px; display:flex; align-items:center; justify-content:center;" onclick="enterPin(1)">1</div>
+            <div class="btn btn-ghost" style="font-size:24px; border-radius:50%; background:rgba(255,255,255,0.1); height:80px; display:flex; align-items:center; justify-content:center;" onclick="enterPin(2)">2</div>
+            <div class="btn btn-ghost" style="font-size:24px; border-radius:50%; background:rgba(255,255,255,0.1); height:80px; display:flex; align-items:center; justify-content:center;" onclick="enterPin(3)">3</div>
+            <div class="btn btn-ghost" style="font-size:24px; border-radius:50%; background:rgba(255,255,255,0.1); height:80px; display:flex; align-items:center; justify-content:center;" onclick="enterPin(4)">4</div>
+            <div class="btn btn-ghost" style="font-size:24px; border-radius:50%; background:rgba(255,255,255,0.1); height:80px; display:flex; align-items:center; justify-content:center;" onclick="enterPin(5)">5</div>
+            <div class="btn btn-ghost" style="font-size:24px; border-radius:50%; background:rgba(255,255,255,0.1); height:80px; display:flex; align-items:center; justify-content:center;" onclick="enterPin(6)">6</div>
+            <div class="btn btn-ghost" style="font-size:24px; border-radius:50%; background:rgba(255,255,255,0.1); height:80px; display:flex; align-items:center; justify-content:center;" onclick="enterPin(7)">7</div>
+            <div class="btn btn-ghost" style="font-size:24px; border-radius:50%; background:rgba(255,255,255,0.1); height:80px; display:flex; align-items:center; justify-content:center;" onclick="enterPin(8)">8</div>
+            <div class="btn btn-ghost" style="font-size:24px; border-radius:50%; background:rgba(255,255,255,0.1); height:80px; display:flex; align-items:center; justify-content:center;" onclick="enterPin(9)">9</div>
+            <div></div>
+            <div class="btn btn-ghost" style="font-size:24px; border-radius:50%; background:rgba(255,255,255,0.1); height:80px; display:flex; align-items:center; justify-content:center;" onclick="enterPin(0)">0</div>
+            <div class="btn btn-ghost" style="font-size:24px; color:var(--danger); height:80px; display:flex; align-items:center; justify-content:center;" onclick="clearPin()">⌫</div>
         </div>
     </div>
 
-    <div id="app-content" style="display:none">
+    <div id="app-content" style="display:none;">
+        
         <div class="header">
-            <div style="font-weight:800; font-size:18px;">Tracky ERP V5</div>
-            <button onclick="exportData()" style="background:none; border:none; color:#f59e0b; font-size:18px;"><i class="fas fa-save"></i></button>
+            <div>
+                <div style="font-size:12px; color:var(--text-sec); id="date-display">11 يناير 2026</div>
+                <div style="font-weight:900; font-size:20px;">Tracky Ultimate 💎</div>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <i class="fas fa-bell" style="font-size:20px; color:var(--primary);"></i>
+                <i class="fas fa-save" style="font-size:20px; color:var(--warning);" onclick="exportData()"></i>
+            </div>
         </div>
 
         <div id="tab-home" class="tab-content active">
             <div class="card balance-card">
-                <div style="font-size: 12px; opacity: 0.7;">صافي السيولة النقدية</div>
-                <div class="total-amount" id="net-balance">0</div>
-                <div style="display:flex; justify-content:center; gap:15px; font-size:11px;">
-                    <span style="color:#ef4444">مديونية فيزا: <span id="visa-debt">0</span></span>
-                    <span style="color:#10b981">لك عند الغير: <span id="my-credits">0</span></span>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <span style="font-size:12px; color:var(--text-sec)">السيولة النقدية (Cash Flow)</span>
+                    <i class="fas fa-eye" id="eye-icon" onclick="toggleBalance()" style="cursor:pointer; opacity:0.7"></i>
+                </div>
+                <div id="main-balance" style="font-size:38px; font-weight:800; letter-spacing:1px; margin-bottom:15px;">****</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; background:rgba(255,255,255,0.05); padding:10px; border-radius:12px;">
+                    <div>
+                        <div style="font-size:10px; color:var(--text-sec)">مديونيات (لك)</div>
+                        <div id="credit-bal" style="color:var(--success); font-weight:bold">0</div>
+                    </div>
+                    <div>
+                        <div style="font-size:10px; color:var(--text-sec)">التزامات (عليك)</div>
+                        <div id="debt-bal" style="color:var(--danger); font-weight:bold">0</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="quick-grid">
-                <div class="quick-btn" onclick="quickAdd('خضار/فاكهة', 'groceries')"><i class="fas fa-carrot" style="color:#10b981"></i> خضار</div>
-                <div class="quick-btn" onclick="quickAdd('سوبر ماركت', 'groceries')"><i class="fas fa-shopping-cart" style="color:#3b82f6"></i> ماركت</div>
-                <div class="quick-btn" onclick="quickAdd('صيدلية/دواء', 'family')"><i class="fas fa-pills" style="color:#ef4444"></i> دواء</div>
-                <div class="quick-btn" onclick="quickAdd('بنزين', 'car')"><i class="fas fa-gas-pump" style="color:#f59e0b"></i> بنزين</div>
-            </div>
+            <div id="smart-alerts-container" style="padding:0 15px;"></div>
 
             <div class="card">
-                <h4 style="margin:0 0 10px 0;">📝 آخر العمليات</h4>
-                <div id="recent-history"></div>
+                <h4 style="margin:0 0 15px 0; opacity:0.8">نشاط حديث</h4>
+                <div id="recent-list"></div>
             </div>
         </div>
 
-        <div id="tab-analysis" class="tab-content">
-            <h2 style="padding:0 15px;">📊 تقارير الأعمال</h2>
+        <div id="tab-uni" class="tab-content">
+            <div class="header" style="background:transparent; position:relative">
+                <h2>🎓 إدارة الجامعة</h2>
+                <button class="btn btn-primary" style="width:auto; padding:8px 15px; font-size:12px;" onclick="openModal('modal-add-student')">+ طالب</button>
+            </div>
             
-            <div class="card">
-                <h3 style="color:#8b5cf6">🎓 إيرادات التدريس</h3>
-                <div id="teaching-stats"></div>
+            <div style="display:flex; gap:10px; padding:0 15px; overflow-x:auto;">
+                <div class="card" style="min-width:140px; margin:0; text-align:center;">
+                    <div style="font-size:10px; color:var(--text-sec)">إجمالي مستحق</div>
+                    <div id="uni-total-due" style="font-weight:bold; color:var(--purple)">0</div>
+                </div>
+                <div class="card" style="min-width:140px; margin:0; text-align:center;">
+                    <div style="font-size:10px; color:var(--text-sec)">تم تحصيله</div>
+                    <div id="uni-collected" style="font-weight:bold; color:var(--success)">0</div>
+                </div>
             </div>
 
             <div class="card">
-                <h3 style="color:#10b981">🏥 إيرادات العيادة</h3>
-                <div id="clinic-stats"></div>
-            </div>
-
-            <div class="card">
-                <h3>🔍 بحث ذكي في المصروفات</h3>
-                <input type="text" placeholder="اسم السلعة (نسكافيه...)" onkeyup="analyzeItem(this.value)">
-                <div id="analysis-result" style="font-size:12px; margin-top:10px;"></div>
-            </div>
-        </div>
-
-        <div id="tab-services" class="tab-content">
-            <div class="card">
-                <h3>🚗 السيارة</h3>
-                <button onclick="openModal('modal-oil')" class="btn" style="background:#3b82f6; padding:10px;">تسجيل صيانة</button>
-                <div id="car-info" style="font-size:12px; margin-top:10px;"></div>
-            </div>
-
-            <div class="card">
-                <h3>🔄 اشتراكات وفواتير</h3>
-                <div id="subs-alert-box"></div>
-                <button onclick="openModal('modal-sub')" class="btn" style="background:#334155; padding:10px; margin-top:10px;">+ اشتراك جديد</button>
+                <input type="text" placeholder="بحث عن طالب..." onkeyup="filterStudents(this.value)" style="background:rgba(0,0,0,0.3)">
+                <div id="students-list" style="margin-top:10px;"></div>
             </div>
         </div>
 
-        <div class="fab" onclick="openModal('modal-trans')">+</div>
+        <div id="tab-clinic" class="tab-content">
+            <div class="header" style="background:transparent;">
+                <h2>🏥 العيادة والمخزن</h2>
+            </div>
+            
+            <div class="grid-menu" style="grid-template-columns: 1fr 1fr;">
+                <div class="grid-item" onclick="openModal('modal-clinic-walkin')">
+                    <i class="fas fa-user-injured grid-icon" style="color:var(--primary)"></i>
+                    <div class="grid-label">كشف سريع</div>
+                </div>
+                <div class="grid-item" onclick="openModal('modal-add-drug')">
+                    <i class="fas fa-box-open grid-icon" style="color:var(--warning)"></i>
+                    <div class="grid-label">إضافة دواء</div>
+                </div>
+            </div>
 
-        <div class="nav">
-            <div class="nav-item active" onclick="switchTab('tab-home', this)"><i class="fas fa-home nav-icon"></i> الرئيسية</div>
-            <div class="nav-item" onclick="switchTab('tab-analysis', this)"><i class="fas fa-chart-line nav-icon"></i> التقارير</div>
-            <div class="nav-item" onclick="switchTab('tab-services', this)"><i class="fas fa-cogs nav-icon"></i> خدمات</div>
+            <div class="card">
+                <h4 style="margin:0 0 10px 0;">💊 مخزن الأدوية</h4>
+                <div id="inventory-list"></div>
+            </div>
+        </div>
+
+        <div id="tab-life" class="tab-content">
+            <div class="card" style="text-align:center;">
+                <h3 style="margin-top:0"><i class="fas fa-car" style="color:var(--primary)"></i> صحة السيارة</h3>
+                <div class="progress-circle" id="oil-progress" style="--deg: 0deg;">
+                    <div class="progress-inner">
+                        <div id="oil-pct" style="font-weight:bold; font-size:18px;">100%</div>
+                        <div style="font-size:10px; color:var(--text-sec)">جودة الزيت</div>
+                    </div>
+                </div>
+                <div style="margin-top:15px; font-size:12px;">
+                    فاضل <span id="oil-remaining" style="color:var(--success)">0</span> كم على التغيير
+                </div>
+                <button class="btn btn-ghost" onclick="openModal('modal-car-oil')">تسجيل غيار زيت</button>
+            </div>
+
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div style="font-weight:bold">🏍️ الدراجة النارية</div>
+                    <div style="font-size:11px; opacity:0.6">إيجار شهري 3000 ج.م</div>
+                </div>
+                <button class="btn btn-success" style="width:auto; padding:8px 15px;" onclick="quickAssetRent()">تحصيل</button>
+            </div>
+        </div>
+
+        <div id="tab-reports" class="tab-content">
+            <div class="card">
+                <h3>📊 تحليل المصروفات</h3>
+                <canvas id="expenseChart" height="250"></canvas>
+            </div>
+            <div class="card">
+                 <h3>🤖 المتسوق الذكي</h3>
+                 <div id="shopping-advice">
+                     <p style="font-size:12px; opacity:0.6">استمر في تسجيل مشترياتك ليقوم الذكاء الاصطناعي بتحليل أنماط الصرف واقتراح الأوفر.</p>
+                 </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="fab-container">
+        <div class="fab" onclick="openModal('modal-context-menu')"><i class="fas fa-plus"></i></div>
+    </div>
+
+    <div class="nav">
+        <div class="nav-item active" onclick="switchTab('tab-home', this)"><i class="fas fa-home"></i> الرئيسية</div>
+        <div class="nav-item" onclick="switchTab('tab-uni', this)"><i class="fas fa-graduation-cap"></i> الجامعة</div>
+        <div class="nav-item" onclick="switchTab('tab-clinic', this)"><i class="fas fa-briefcase-medical"></i> العيادة</div>
+        <div class="nav-item" onclick="switchTab('tab-life', this)"><i class="fas fa-car-side"></i> الأصول</div>
+        <div class="nav-item" onclick="switchTab('tab-reports', this)"><i class="fas fa-chart-pie"></i> تقارير</div>
+    </div>
+
+    <div class="modal" id="modal-context-menu">
+        <div class="modal-box" style="padding-bottom:50px;">
+            <h3 style="text-align:center; margin-bottom:20px;">ماذا تريد أن تسجل؟</h3>
+            <div class="grid-menu">
+                <div class="grid-item" onclick="openSubModal('modal-add-trans', 'groceries')">
+                    <i class="fas fa-shopping-cart grid-icon" style="color:#30d158"></i> البيت
+                </div>
+                <div class="grid-item" onclick="openSubModal('modal-add-trans', 'car')">
+                    <i class="fas fa-gas-pump grid-icon" style="color:#ff9f0a"></i> سيارة
+                </div>
+                <div class="grid-item" onclick="openSubModal('modal-add-trans', 'family')">
+                    <i class="fas fa-child grid-icon" style="color:#bf5af2"></i> عائلة
+                </div>
+                <div class="grid-item" onclick="openModal('modal-clinic-walkin')">
+                    <i class="fas fa-stethoscope grid-icon" style="color:#0a84ff"></i> إيراد عيادة
+                </div>
+                <div class="grid-item" onclick="switchTab('tab-uni'); closeModal()">
+                    <i class="fas fa-user-graduate grid-icon" style="color:#5e5ce6"></i> قسط طالب
+                </div>
+                <div class="grid-item" onclick="openModal('modal-invoice-parser')">
+                    <i class="fas fa-magic grid-icon" style="color:#ffd60a"></i> قراءة فاتورة
+                </div>
+                <div class="grid-item" onclick="openModal('modal-add-debt')">
+                    <i class="fas fa-hand-holding-usd grid-icon" style="color:#ff453a"></i> ديون/سلف
+                </div>
+                <div class="grid-item" onclick="openModal('modal-consulting')">
+                    <i class="fas fa-balance-scale grid-icon" style="color:#64d2ff"></i> استشارة
+                </div>
+                <div class="grid-item" onclick="openSubModal('modal-add-trans', 'income')">
+                    <i class="fas fa-wallet grid-icon" style="color:#ffffff"></i> إيراد آخر
+                </div>
+            </div>
+            <button class="btn btn-ghost" onclick="closeModal()">إلغاء</button>
         </div>
     </div>
 
-    <div class="modal" id="modal-trans">
+    <div class="modal" id="modal-add-trans">
         <div class="modal-box">
-            <h3>إضافة عملية</h3>
-            <select id="t-type" onchange="updateCategories()">
-                <option value="expense">💸 مصروف</option>
-                <option value="income">💰 إيراد</option>
-            </select>
-            
-            <select id="t-cat">
-                </select>
-
+            <h3 id="trans-modal-title">تسجيل عملية</h3>
             <input type="number" id="t-amount" placeholder="المبلغ">
+            <input type="text" id="t-item" list="items-datalist" placeholder="البند (مثلاً: نسكافيه..)" oninput="checkSmartAdvice()">
+            <datalist id="items-datalist"></datalist>
+            <div id="ai-advice-box" style="display:none; background:rgba(10, 132, 255, 0.1); padding:10px; border-radius:10px; font-size:12px; margin-bottom:10px; border:1px solid var(--primary);"></div>
             
-            <div id="smart-inputs">
-                <input type="text" id="t-item" list="items-list" placeholder="اسم البند (ابحث...)" oninput="checkAdvice()">
-                <datalist id="items-list"></datalist>
-                <div id="smart-advice" class="advice-box"></div>
-                <input type="text" id="t-vendor" placeholder="المكان (كارفور، كشك..)">
-            </div>
-
+            <input type="text" id="t-vendor" placeholder="المكان (اختياري)">
             <select id="t-method">
                 <option value="cash">💵 كاش</option>
-                <option value="visa">💳 فيزا (آجل)</option>
+                <option value="visa">💳 كارت (خصم مباشر)</option>
+                <option value="wallet">📱 محفظة إلكترونية</option>
             </select>
-
-            <button class="btn btn-primary" onclick="saveTrans()">حفظ</button>
-            <button class="btn" style="background:transparent; color:#94a3b8" onclick="closeModal()">إلغاء</button>
+            <input type="hidden" id="t-cat">
+            <input type="hidden" id="t-type" value="expense">
+            <button class="btn btn-primary" onclick="saveTransaction()">حفظ</button>
         </div>
     </div>
 
-    <div class="modal" id="modal-oil">
+    <div class="modal" id="modal-invoice-parser">
         <div class="modal-box">
-            <h3>صيانة سيارة</h3>
-            <input type="number" id="o-km" placeholder="العداد (KM)">
-            <input type="text" id="o-note" placeholder="ملاحظات">
-            <input type="number" id="o-cost" placeholder="التكلفة">
-            <button class="btn btn-primary" onclick="saveOil()">حفظ</button>
-            <button class="btn" style="background:transparent" onclick="closeModal()">إلغاء</button>
+            <h3>🤖 محلل الفواتير الذكي</h3>
+            <p style="font-size:12px; opacity:0.7">قم بتصوير الفاتورة بـ Gemini وانسخ الرد هنا.</p>
+            <textarea id="invoice-text" rows="5" placeholder="الصق نص الفاتورة هنا..." style="background:#2c2c2e; width:100%; border-radius:12px; color:white; border:none; padding:10px;"></textarea>
+            <button class="btn btn-purple" style="background:var(--purple); color:white" onclick="parseInvoice()">تحليل وتسجيل</button>
         </div>
     </div>
 
-    <div class="modal" id="modal-sub">
+    <div class="modal" id="modal-add-student">
         <div class="modal-box">
-            <h3>اشتراك جديد</h3>
-            <input type="text" id="s-name" placeholder="الاسم">
-            <input type="number" id="s-cost" placeholder="القيمة">
-            <input type="number" id="s-day" placeholder="يوم الاستحقاق (1-30)">
-            <button class="btn btn-primary" onclick="saveSub()">حفظ</button>
-            <button class="btn" style="background:transparent" onclick="closeModal()">إلغاء</button>
+            <h3>طالب جديد</h3>
+            <input type="text" id="st-name" placeholder="اسم الطالب">
+            <select id="st-year">
+                <option value="1">فرقة 1</option>
+                <option value="2">فرقة 2</option>
+                <option value="3">فرقة 3</option>
+                <option value="4">فرقة 4</option>
+            </select>
+            <input type="number" id="st-total" placeholder="إجمالي المستحق (كورس + منصة)">
+            <button class="btn btn-primary" onclick="saveStudent()">حفظ الطالب</button>
+        </div>
+    </div>
+    <div class="modal" id="modal-pay-student">
+        <div class="modal-box">
+            <h3 id="pay-st-title">دفع قسط</h3>
+            <input type="number" id="st-pay-amount" placeholder="المبلغ المدفوع">
+            <input type="hidden" id="st-pay-id">
+            <button class="btn btn-success" onclick="processStudentPay()">تسجيل دفعة</button>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-clinic-walkin">
+        <div class="modal-box">
+            <h3>🏥 كشف سريع</h3>
+            <select id="cl-type">
+                <option value="exam">كشف عادي</option>
+                <option value="consult">استشارة</option>
+                <option value="urgent">طوارئ</option>
+            </select>
+            <input type="number" id="cl-amount" placeholder="القيمة">
+            <button class="btn btn-primary" onclick="saveClinicRevenue()">حفظ</button>
+        </div>
+    </div>
+    <div class="modal" id="modal-add-drug">
+        <div class="modal-box">
+            <h3>💊 إضافة دواء للمخزن</h3>
+            <input type="text" id="d-name" placeholder="اسم الدواء">
+            <input type="number" id="d-qty" placeholder="الكمية">
+            <input type="number" id="d-cost" placeholder="سعر الشراء (للوحدة)">
+            <input type="number" id="d-price" placeholder="سعر البيع (للوحدة)">
+            <button class="btn btn-primary" onclick="saveDrug()">إضافة</button>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-car-oil">
+        <div class="modal-box">
+            <h3>🔧 غيار زيت</h3>
+            <input type="number" id="oil-current-km" placeholder="قراءة العداد الحالية">
+            <input type="number" id="oil-cost" placeholder="التكلفة">
+            <input type="number" id="oil-limit" placeholder="تغيير بعد كام كم؟ (مثلاً 5000)">
+            <button class="btn btn-primary" onclick="saveOilChange()">حفظ</button>
         </div>
     </div>
 
     <script>
-        // CONFIG & DATA
-        const categories = {
-            income: [
-                {val: 'clinic_center', txt: '🏥 عيادة - المركز'},
-                {val: 'clinic_private', txt: '🏥 عيادة - حالات خاصة'},
-                {val: 'clinic_meds', txt: '💊 عيادة - أدوية'},
-                {val: 'clinic_hosp', txt: '🏥 مستشفى (مرتب)'},
-                {val: 'teach_1', txt: '🎓 تدريس - فرقة 1'},
-                {val: 'teach_2', txt: '🎓 تدريس - فرقة 2'},
-                {val: 'teach_3', txt: '🎓 تدريس - فرقة 3'},
-                {val: 'teach_4', txt: '🎓 تدريس - فرقة 4'},
-                {val: 'platform', txt: '💻 منصة تعليمية'},
-                {val: 'consulting', txt: '⚖️ استشارات'},
-                {val: 'bike', txt: '🏍️ إيجار دراجة'},
-                {val: 'other_in', txt: '💰 إيراد آخر'}
-            ],
-            expense: [
-                {val: 'groceries', txt: '🛒 سوبر ماركت/طلبات'},
-                {val: 'family', txt: '👧 عائلة/دروس/تطعيم'},
-                {val: 'car', txt: '🚗 سيارة/بنزين'},
-                {val: 'bills', txt: '💡 فواتير/اشتراكات'},
-                {val: 'personal', txt: '👔 شخصي/نسكافيه'},
-                {val: 'clinic_ops', txt: '🏥 مصروفات عيادة'},
-                {val: 'teach_ops', txt: '🎓 مصروفات تدريس'}
-            ]
-        };
-
+        // --- 1. INITIALIZATION & STATE ---
+        const DB_KEY = 'tracky_v6_db';
         let db = {
-            trans: JSON.parse(localStorage.getItem('erp_v5_trans')) || [],
-            subs: JSON.parse(localStorage.getItem('erp_v5_subs')) || [],
-            car: JSON.parse(localStorage.getItem('erp_v5_car')) || [],
-            pin: localStorage.getItem('erp_v5_pin') || '0000'
+            trans: [],
+            students: [],
+            inventory: [],
+            car: { current_km: 0, last_oil: 0, oil_limit: 5000 },
+            debts: [],
+            pin: '0000'
         };
 
-        // --- SECURITY ---
+        // Load Data
+        const saved = localStorage.getItem(DB_KEY);
+        if(saved) db = JSON.parse(saved);
+
+        // Security
         let enteredPin = '';
         function enterPin(n) {
-            if(enteredPin.length < 4) {
-                enteredPin += n;
-                updateDots();
-                if(enteredPin.length === 4) checkPin();
+            enteredPin += n;
+            renderPinDots();
+            if(enteredPin.length === 4) {
+                if(enteredPin === db.pin) {
+                    document.getElementById('lock-screen').style.opacity = '0';
+                    setTimeout(() => document.getElementById('lock-screen').style.display = 'none', 300);
+                    document.getElementById('app-content').style.display = 'block';
+                    initApp();
+                } else {
+                    alert('رمز خاطئ'); enteredPin = ''; renderPinDots();
+                }
             }
         }
-        function clearPin() { enteredPin = ''; updateDots(); }
-        function updateDots() { document.querySelectorAll('.pin-dot').forEach((d,i)=>d.classList.toggle('filled', i<enteredPin.length)); }
-        function checkPin() {
-            if(enteredPin === db.pin) {
-                document.getElementById('lock-screen').style.display = 'none';
-                document.getElementById('app-content').style.display = 'block';
-                initApp();
-            } else { alert('رمز خطأ'); enteredPin=''; updateDots(); }
-        }
-
-        // --- APP LOGIC ---
-        function initApp() {
-            updateCategories();
-            renderBalance();
-            renderHistory();
-            renderBizStats();
-            renderServices();
-            populateAutoComplete();
-        }
-
-        function updateCategories() {
-            const type = document.getElementById('t-type').value;
-            const sel = document.getElementById('t-cat');
-            sel.innerHTML = '';
-            categories[type].forEach(c => {
-                sel.innerHTML += `<option value="${c.val}">${c.txt}</option>`;
+        function clearPin() { enteredPin = ''; renderPinDots(); }
+        function renderPinDots() {
+            document.querySelectorAll('.pin-dot').forEach((d,i) => {
+                d.classList.toggle('filled', i < enteredPin.length);
             });
-            
-            // Hide smart shopper inputs if Income
-            document.getElementById('smart-inputs').style.display = type === 'expense' ? 'block' : 'none';
         }
 
-        function renderBalance() {
-            let liquid = 0, visa = 0, credit = 0;
+        // --- 2. CORE FUNCTIONS ---
+        function initApp() {
+            renderDashboard();
+            renderStudents();
+            renderInventory();
+            renderCar();
+            updateAutoComplete();
+        }
+
+        function saveData() {
+            localStorage.setItem(DB_KEY, JSON.stringify(db));
+            initApp(); // Re-render everything
+        }
+
+        function renderDashboard() {
+            // Calc Balances
+            let liquid = 0, credits = 0, debts = 0;
             db.trans.forEach(t => {
                 if(t.type === 'income') liquid += parseFloat(t.amount);
-                else {
-                    if(t.method === 'visa') visa += parseFloat(t.amount);
-                    else liquid -= parseFloat(t.amount);
-                }
+                else liquid -= parseFloat(t.amount);
             });
-            document.getElementById('net-balance').innerText = liquid.toLocaleString() + ' ج.م';
-            document.getElementById('visa-debt').innerText = visa.toLocaleString();
+            
+            // Calc debts from debt module
+            // (For V6 simplified: debts handled in trans or separate? Let's keep it simple for now)
+            
+            document.getElementById('main-balance').dataset.val = liquid.toLocaleString() + ' ج.م';
+            if(!document.getElementById('main-balance').innerText.includes('*')) 
+                document.getElementById('main-balance').innerText = liquid.toLocaleString() + ' ج.م';
+
+            // Alerts
+            const alerts = document.getElementById('smart-alerts-container');
+            alerts.innerHTML = '';
+            
+            // Check Car
+            const kmDiff = (db.car.last_oil + db.car.oil_limit) - db.car.current_km;
+            if(kmDiff < 500) {
+                alerts.innerHTML += `<div class="card" style="background:rgba(255, 69, 58, 0.2); border:1px solid var(--danger); padding:10px; margin:0 0 10px 0;">⚠️ زيت السيارة يحتاج تغيير قريباً!</div>`;
+            }
+
+            // Recent Trans
+            const rec = document.getElementById('recent-list');
+            rec.innerHTML = '';
+            db.trans.slice(0, 5).reverse().forEach(t => {
+                rec.innerHTML += `
+                <div class="list-row">
+                    <div>
+                        <div style="font-weight:bold">${t.item || t.cat}</div>
+                        <div style="font-size:10px; opacity:0.6">${t.date}</div>
+                    </div>
+                    <div style="font-weight:bold; color:${t.type==='income'? 'var(--success)':'var(--text)'}">
+                        ${t.type==='income'?'+':'-'}${t.amount}
+                    </div>
+                </div>`;
+            });
         }
 
-        function renderBizStats() {
-            // Calculate Totals per Category
-            let stats = {};
-            db.trans.forEach(t => {
-                if(t.type === 'income') {
-                    if(!stats[t.cat]) stats[t.cat] = 0;
-                    stats[t.cat] += parseFloat(t.amount);
-                }
+        // --- 3. UNIVERSITY MODULE ---
+        function saveStudent() {
+            db.students.push({
+                id: Date.now(),
+                name: document.getElementById('st-name').value,
+                year: document.getElementById('st-year').value,
+                total: parseFloat(document.getElementById('st-total').value),
+                paid: 0,
+                history: []
+            });
+            saveData(); closeModal();
+        }
+
+        function renderStudents() {
+            const list = document.getElementById('students-list');
+            list.innerHTML = '';
+            let totalDue = 0, totalCol = 0;
+
+            db.students.forEach(s => {
+                const remaining = s.total - s.paid;
+                totalDue += s.total;
+                totalCol += s.paid;
+                
+                const statusColor = remaining <= 0 ? 'var(--success)' : 'var(--warning)';
+
+                list.innerHTML += `
+                <div class="card" style="margin:10px 0; padding:15px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div style="font-weight:bold">${s.name} <span class="tag" style="background:#333">سنة ${s.year}</span></div>
+                        <div style="font-size:11px; margin-top:5px;">مدفوع: ${s.paid} | باقي: <span style="color:${statusColor}">${remaining}</span></div>
+                    </div>
+                    ${remaining > 0 ? `<button class="btn btn-primary" style="width:auto; padding:5px 15px; font-size:12px;" onclick="openPayModal(${s.id})">دفع</button>` : '<i class="fas fa-check-circle" style="color:var(--success)"></i>'}
+                </div>`;
             });
 
-            // Helper to render
-            const renderRows = (prefix, elId) => {
-                const el = document.getElementById(elId);
-                el.innerHTML = '';
-                const cats = categories.income.filter(c => c.val.startsWith(prefix));
-                let total = 0;
-                cats.forEach(c => {
-                    const val = stats[c.val] || 0;
-                    total += val;
-                    if(val > 0) {
-                        el.innerHTML += `
-                        <div class="biz-row">
-                            <span>${c.txt}</span>
-                            <span style="font-weight:bold">${val.toLocaleString()}</span>
-                        </div>`;
-                    }
+            document.getElementById('uni-total-due').innerText = totalDue.toLocaleString();
+            document.getElementById('uni-collected').innerText = totalCol.toLocaleString();
+        }
+
+        function openPayModal(id) {
+            document.getElementById('st-pay-id').value = id;
+            openModal('modal-pay-student');
+        }
+
+        function processStudentPay() {
+            const id = document.getElementById('st-pay-id').value;
+            const amount = parseFloat(document.getElementById('st-pay-amount').value);
+            const idx = db.students.findIndex(s => s.id == id);
+            
+            if(idx > -1 && amount) {
+                db.students[idx].paid += amount;
+                db.students[idx].history.push({date: new Date().toLocaleDateString(), amount});
+                
+                // Add to Global Transactions
+                db.trans.push({
+                    id: Date.now(), type: 'income', amount: amount, cat: 'uni', 
+                    item: `قسط طالب: ${db.students[idx].name}`, date: new Date().toLocaleDateString(), method: 'cash'
                 });
-                if(total === 0) el.innerHTML = '<div style="opacity:0.5; font-size:12px;">لا توجد بيانات</div>';
-                else el.innerHTML += `<div style="border-top:1px dashed #555; margin-top:5px; padding-top:5px; font-weight:bold; text-align:left;">الإجمالي: ${total.toLocaleString()}</div>`;
-            };
-
-            renderRows('teach', 'teaching-stats');
-            renderRows('clinic', 'clinic-stats');
+                saveData(); closeModal();
+            }
         }
 
-        function saveTrans() {
-            const trans = {
+        // --- 4. CLINIC & INVENTORY ---
+        function saveDrug() {
+            db.inventory.push({
+                id: Date.now(),
+                name: document.getElementById('d-name').value,
+                qty: parseInt(document.getElementById('d-qty').value),
+                cost: parseFloat(document.getElementById('d-cost').value),
+                price: parseFloat(document.getElementById('d-price').value)
+            });
+            saveData(); closeModal();
+        }
+
+        function renderInventory() {
+            const list = document.getElementById('inventory-list');
+            list.innerHTML = '';
+            db.inventory.forEach((d, i) => {
+                list.innerHTML += `
+                <div class="list-row">
+                    <div>
+                        <div style="font-weight:bold">${d.name}</div>
+                        <div style="font-size:10px;">مخزون: ${d.qty} | شراء: ${d.cost} | بيع: ${d.price}</div>
+                    </div>
+                    <button class="btn btn-success" style="width:auto; padding:5px 10px; font-size:11px;" onclick="sellDrug(${i})">بيع</button>
+                </div>`;
+            });
+        }
+
+        function sellDrug(idx) {
+            if(db.inventory[idx].qty > 0) {
+                db.inventory[idx].qty--;
+                // Add Income
+                const profit = db.inventory[idx].price - db.inventory[idx].cost;
+                db.trans.push({
+                    id: Date.now(), type: 'income', amount: db.inventory[idx].price, 
+                    cat: 'clinic_pharma', item: `بيع دواء: ${db.inventory[idx].name}`, 
+                    date: new Date().toLocaleDateString(), method: 'cash'
+                });
+                saveData();
+                alert(`تم البيع! الربح المحقق: ${profit}`);
+            } else {
+                alert('نفذ المخزون!');
+            }
+        }
+
+        function saveClinicRevenue() {
+            const amount = document.getElementById('cl-amount').value;
+            db.trans.push({
+                id: Date.now(), type: 'income', amount: amount, cat: 'clinic', 
+                item: 'كشف عيادة', date: new Date().toLocaleDateString(), method: 'cash'
+            });
+            saveData(); closeModal();
+        }
+
+        // --- 5. CAR LOGIC ---
+        function saveOilChange() {
+            db.car.current_km = parseFloat(document.getElementById('oil-current-km').value);
+            db.car.oil_limit = parseFloat(document.getElementById('oil-limit').value);
+            db.car.last_oil = db.car.current_km;
+            
+            const cost = document.getElementById('oil-cost').value;
+            if(cost) {
+                db.trans.push({
+                    id: Date.now(), type: 'expense', amount: cost, cat: 'car', 
+                    item: 'غيار زيت', date: new Date().toLocaleDateString(), method: 'cash'
+                });
+            }
+            saveData(); closeModal();
+        }
+
+        function renderCar() {
+            const used = db.car.current_km - db.car.last_oil;
+            const remaining = db.car.oil_limit - used;
+            const pct = Math.max(0, Math.min(100, (remaining / db.car.oil_limit) * 100));
+            
+            document.getElementById('oil-progress').style.setProperty('--deg', `${pct * 3.6}deg`);
+            document.getElementById('oil-pct').innerText = Math.round(pct) + '%';
+            document.getElementById('oil-remaining').innerText = remaining;
+            
+            if(pct < 20) document.getElementById('oil-progress').style.setProperty('--primary', '#FF453A');
+        }
+
+        // --- 6. GENERIC TRANS & AI PARSER ---
+        function openSubModal(modalId, category) {
+            closeModal(); // close context menu
+            document.getElementById('t-cat').value = category;
+            
+            if(category === 'income') {
+                 document.getElementById('t-type').value = 'income';
+                 document.getElementById('trans-modal-title').innerText = 'تسجيل إيراد';
+            } else {
+                 document.getElementById('t-type').value = 'expense';
+                 document.getElementById('trans-modal-title').innerText = 'تسجيل مصروف';
+            }
+            openModal(modalId);
+        }
+
+        function checkSmartAdvice() {
+            const item = document.getElementById('t-item').value;
+            const box = document.getElementById('ai-advice-box');
+            if(item.length < 3) { box.style.display='none'; return; }
+            
+            // Search history
+            const hits = db.trans.filter(t => t.item && t.item.includes(item));
+            if(hits.length > 0) {
+                hits.sort((a,b) => parseFloat(a.amount) - parseFloat(b.amount));
+                box.style.display = 'block';
+                box.innerHTML = `🤖 نصيحة: اشتريته سابقاً بـ <b>${hits[0].amount}</b>`;
+            }
+        }
+
+        function saveTransaction() {
+            const amt = document.getElementById('t-amount').value;
+            if(!amt) return;
+            
+            db.trans.push({
                 id: Date.now(),
                 type: document.getElementById('t-type').value,
+                amount: amt,
                 cat: document.getElementById('t-cat').value,
-                amount: document.getElementById('t-amount').value,
                 item: document.getElementById('t-item').value,
                 vendor: document.getElementById('t-vendor').value,
                 method: document.getElementById('t-method').value,
-                date: new Date().toLocaleDateString('en-GB')
-            };
+                date: new Date().toLocaleDateString()
+            });
+            saveData(); closeModal();
+        }
 
-            if(!trans.amount) return;
-            
-            // Use Category Name as Item if Item is empty (for income)
-            if(!trans.item && trans.type === 'income') {
-                const catObj = categories.income.find(c => c.val === trans.cat);
-                trans.item = catObj ? catObj.txt : trans.cat;
+        function parseInvoice() {
+            const text = document.getElementById('invoice-text').value;
+            // Simple logic: extract numbers and sum them
+            const numbers = text.match(/\d+(\.\d+)?/g);
+            let total = 0;
+            if(numbers) {
+                total = numbers.map(Number).reduce((a, b) => a + b, 0);
             }
-
-            db.trans.unshift(trans);
-            saveAll(); closeModal(); initApp();
             
-            // Reset
-            document.getElementById('t-amount').value = '';
-            document.getElementById('t-item').value = '';
-        }
-
-        // Helper Functions (Same as V4 but optimized)
-        function quickAdd(item, cat) {
-            document.getElementById('t-type').value = 'expense';
-            updateCategories();
-            document.getElementById('t-cat').value = cat;
-            document.getElementById('t-item').value = item;
-            openModal('modal-trans');
-            document.getElementById('t-amount').focus();
-        }
-
-        function checkAdvice() {
-            const val = document.getElementById('t-item').value;
-            if(val.length < 3) return;
-            const history = db.trans.filter(t => t.item && t.item.includes(val));
-            if(history.length > 0) {
-                history.sort((a,b)=>parseFloat(a.amount)-parseFloat(b.amount));
-                document.getElementById('smart-advice').style.display = 'block';
-                document.getElementById('smart-advice').innerHTML = `💡 أفضل سعر: ${history[0].amount} (${history[0].vendor})`;
+            if(confirm(`الذكاء الاصطناعي وجد أرقاماً بمجموع: ${total} ج.م .. هل تريد تسجيلها كمصروف بيت؟`)) {
+                db.trans.push({
+                    id: Date.now(), type: 'expense', amount: total, cat: 'groceries', 
+                    item: 'فاتورة (تحليل ذكي)', date: new Date().toLocaleDateString(), method: 'cash'
+                });
+                saveData(); closeModal();
             }
         }
 
-        function renderHistory() {
-            const el = document.getElementById('recent-history');
-            el.innerHTML = '';
-            db.trans.slice(0, 20).forEach((t, idx) => {
-                const color = t.type === 'income' ? '#10b981' : '#ef4444';
-                el.innerHTML += `
-                <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #333; font-size:13px;">
-                    <div>
-                        <div style="font-weight:600">${t.item || t.cat}</div>
-                        <div style="font-size:10px; opacity:0.6">${t.date} | ${t.vendor||''}</div>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="color:${color}; font-weight:bold">${t.amount}</span>
-                        <i class="fas fa-trash" style="color:#ef4444; cursor:pointer;" onclick="delTrans(${idx})"></i>
-                    </div>
-                </div>`;
-            });
-        }
-
-        function delTrans(i) {
-            if(confirm('حذف؟')) { db.trans.splice(i,1); saveAll(); initApp(); }
-        }
-
-        function saveOil() {
-            db.car.push({
-                km: document.getElementById('o-km').value,
-                note: document.getElementById('o-note').value,
-                date: new Date().toLocaleDateString('en-GB')
-            });
-            const cost = document.getElementById('o-cost').value;
-            if(cost > 0) {
-                db.trans.unshift({id:Date.now(), type:'expense', amount:cost, cat:'car', item:'صيانة', date: new Date().toLocaleDateString('en-GB'), method:'cash'});
+        function quickAssetRent() {
+            if(confirm('تسجيل تحصيل 3000ج إيجار الدراجة؟')) {
+                db.trans.push({
+                    id: Date.now(), type: 'income', amount: 3000, cat: 'asset', 
+                    item: 'إيجار دراجة نارية', date: new Date().toLocaleDateString(), method: 'cash'
+                });
+                saveData();
             }
-            saveAll(); closeModal(); initApp();
         }
 
-        function saveSub() {
-            db.subs.push({
-                name: document.getElementById('s-name').value,
-                cost: document.getElementById('s-cost').value,
-                day: document.getElementById('s-day').value
-            });
-            saveAll(); closeModal(); initApp();
-        }
-
-        function renderServices() {
-            // Car
-            const lastCar = db.car[db.car.length-1];
-            document.getElementById('car-info').innerText = lastCar ? `آخر صيانة: ${lastCar.date} (${lastCar.km} كم)` : 'لا توجد بيانات';
-            
-            // Subs
-            const box = document.getElementById('subs-alert-box');
-            box.innerHTML = '';
-            const today = new Date().getDate();
-            db.subs.forEach(s => {
-                const diff = s.day - today;
-                const color = (diff >= 0 && diff <= 3) ? '#ef4444' : '#94a3b8';
-                box.innerHTML += `<div style="display:flex; justify-content:space-between; font-size:12px; padding:5px 0; border-bottom:1px dashed #333;">
-                    <span>${s.name} (${s.cost})</span><span style="color:${color}">يوم ${s.day}</span>
-                </div>`;
+        // --- UTILS ---
+        function updateAutoComplete() {
+            const list = document.getElementById('items-datalist');
+            list.innerHTML = '';
+            [...new Set(db.trans.map(t=>t.item))].forEach(i => {
+                if(i) list.innerHTML += `<option value="${i}">`;
             });
         }
-
-        function populateAutoComplete() {
-            const dl = document.getElementById('items-list');
-            dl.innerHTML = '';
-            [...new Set(db.trans.map(t=>t.item))].forEach(i => dl.innerHTML += `<option value="${i}">`);
-        }
-        
-        function analyzeItem(v) {
-             if(v.length < 2) return;
-             const res = db.trans.filter(t=>t.item && t.item.includes(v));
-             const total = res.reduce((a,b)=>a+parseFloat(b.amount),0);
-             document.getElementById('analysis-result').innerHTML = `الإجمالي: ${total} ج.م (${res.length} عملية)`;
-        }
-
-        function saveAll() {
-            localStorage.setItem('erp_v5_trans', JSON.stringify(db.trans));
-            localStorage.setItem('erp_v5_subs', JSON.stringify(db.subs));
-            localStorage.setItem('erp_v5_car', JSON.stringify(db.car));
-        }
-
-        function exportData() {
-            const a = document.createElement('a');
-            a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-            a.download = "Tracky_Backup.json";
-            a.click();
-        }
-
-        // Utils
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
         function switchTab(id, el) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            el.classList.add('active');
+            if(el) {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                el.classList.add('active');
+            }
+        }
+        function toggleBalance() {
+            const el = document.getElementById('main-balance');
+            if(el.innerText.includes('*')) el.innerText = el.dataset.val;
+            else el.innerText = '****';
+        }
+        function exportData() {
+            const a = document.createElement("a");
+            a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+            a.download = "Tracky_Backup_" + new Date().toISOString().slice(0,10) + ".json";
+            a.click();
         }
     </script>
 </body>
