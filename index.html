@@ -2,342 +2,674 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Tracky Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Family ERP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
             --primary: #3b82f6;
-            --bg-dark: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7); /* شفافية */
-            --text-color: #ffffff;
+            --accent: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text: #f8fafc;
+            --text-sec: #94a3b8;
         }
 
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         body {
             margin: 0;
             font-family: 'Cairo', sans-serif;
-            background: linear-gradient(135deg, #020617 0%, #1e293b 100%);
-            color: var(--text-color);
-            min-height: 100vh;
-            padding-bottom: 80px; /* مسافة للقائمة السفلية */
+            background-color: var(--bg);
+            color: var(--text);
+            padding-bottom: 80px; /* للقائمة السفلية */
+            overscroll-behavior-y: none;
         }
 
-        /* HEADER */
+        /* --- HEADER --- */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px;
+            padding: 15px 20px;
+            background: rgba(15, 23, 42, 0.9);
             backdrop-filter: blur(10px);
             position: sticky;
             top: 0;
             z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
-        .brand { font-weight: 800; font-size: 24px; background: -webkit-linear-gradient(#60a5fa, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .action-buttons { display: flex; gap: 10px; }
         
-        .lang-btn {
-            background: rgba(255,255,255,0.1);
-            padding: 5px 12px;
+        .btn-icon {
+            width: 40px; height: 40px;
             border-radius: 12px;
-            font-size: 12px;
+            border: none;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
             cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.2s;
         }
+        .btn-add-money { background: var(--success); color: #fff; }
+        .btn-add-expense { background: var(--danger); color: #fff; }
+        .btn-add-event { background: var(--warning); color: #fff; }
 
-        /* PAGES & ANIMATION */
-        .page {
-            display: none;
-            padding: 0 15px;
-            animation: fadeIn 0.4s ease;
-        }
-        .page.active { display: block; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* CARDS */
-        .card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        /* BALANCE SECTION */
-        .balance-card {
+        /* --- BALANCE CARD --- */
+        .balance-container {
             text-align: center;
-            padding: 30px 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--surface) 0%, #0f172a 100%);
+            margin: 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
             position: relative;
         }
-        .balance-amount { font-size: 38px; font-weight: 700; margin: 10px 0; letter-spacing: 1px; }
-        .eye-icon { position: absolute; top: 20px; left: 20px; font-size: 20px; cursor: pointer; opacity: 0.7; }
+        
+        .total-label { font-size: 14px; color: var(--text-sec); margin-bottom: 5px; }
+        .total-amount { font-size: 36px; font-weight: 800; letter-spacing: 1px; }
+        .eye-toggle { position: absolute; top: 15px; left: 15px; color: var(--text-sec); cursor: pointer; padding: 10px;}
 
-        /* ACTION BUTTONS */
-        .actions-grid { display: flex; gap: 10px; margin-bottom: 20px; }
-        .action-btn {
-            flex: 1;
-            background: var(--primary);
-            color: white;
+        /* --- ANALYSIS CHART --- */
+        .chart-card {
+            margin: 0 15px 20px 15px;
+            padding: 15px;
+            background: var(--surface);
+            border-radius: 16px;
+        }
+
+        /* --- ALERTS & TODOS --- */
+        .section-title { padding: 0 20px; font-size: 18px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+        .section-title span { font-size: 12px; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 20px; font-weight: normal; cursor: pointer;}
+
+        .alerts-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding: 15px 20px;
+            padding-bottom: 5px; /* scrollbar hide */
+        }
+        .alerts-scroll::-webkit-scrollbar { display: none; }
+
+        .alert-card {
+            min-width: 200px;
             padding: 15px;
             border-radius: 16px;
-            text-align: center;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
         }
-        .action-btn:active { transform: scale(0.97); }
+        .alert-financial { background: linear-gradient(135deg, #451a1a 0%, #7f1d1d 100%); border: 1px solid #ef4444; }
+        .alert-event { background: linear-gradient(135deg, #1e3a8a 0%, #172554 100%); border: 1px solid #3b82f6; }
+        
+        .alert-title { font-weight: 700; font-size: 14px; margin-bottom: 5px; }
+        .alert-date { font-size: 11px; opacity: 0.8; margin-bottom: 10px; }
+        .alert-action { background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px; border-radius: 8px; font-size: 12px; cursor: pointer; }
 
-        /* LIST ITEMS (TRANSACTIONS) */
-        .trans-item {
+        /* --- LISTS (Income/Expense/Profit) --- */
+        .list-container { padding: 0 15px; display: none; } /* Hidden by default */
+        .list-container.active { display: block; animation: fadeIn 0.3s; }
+        
+        .list-item {
+            background: var(--surface);
+            padding: 15px;
+            border-radius: 14px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-left: 4px solid transparent;
         }
-        .trans-icon { background: rgba(255,255,255,0.1); padding: 10px; border-radius: 12px; margin-left: 10px; }
-        .amount.neg { color: #f87171; }
-        .amount.pos { color: #4ade80; }
+        .item-details h4 { margin: 0; font-size: 15px; }
+        .item-details p { margin: 5px 0 0 0; font-size: 11px; color: var(--text-sec); }
+        .item-amount { font-weight: 700; font-size: 15px; }
+        
+        .source-clinic { border-left-color: var(--success); }
+        .source-teaching { border-left-color: var(--accent); }
+        .source-personal { border-left-color: var(--warning); }
 
-        /* BOTTOM NAV */
+        /* --- BOTTOM NAV --- */
         .nav {
-            position: fixed;
-            bottom: 20px; left: 20px; right: 20px;
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
-            display: flex;
-            justify-content: space-around;
-            padding: 15px 0;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1);
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex; justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid rgba(255,255,255,0.05);
             z-index: 200;
         }
         .nav-item {
-            text-align: center;
-            opacity: 0.5;
-            cursor: pointer;
-            transition: 0.3s;
-            font-size: 10px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-sec); font-size: 10px; cursor: pointer; transition: 0.2s;
         }
-        .nav-item.active { opacity: 1; color: var(--primary); transform: translateY(-3px); }
-        .nav-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+        .nav-item i { font-size: 18px; margin-bottom: 4px; }
+        .nav-item.active { color: var(--primary); transform: translateY(-2px); }
 
-        /* MODALS */
+        /* --- MODALS --- */
         .modal {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
+            z-index: 1000;
             display: none;
             justify-content: center;
-            align-items: flex-end; /* يظهر من الأسفل للموبايل */
-            z-index: 300;
+            align-items: flex-end;
         }
-        .modal-box {
+        .modal-content {
             background: #1e293b;
-            width: 100%;
+            width: 100%; max-width: 500px;
             border-radius: 25px 25px 0 0;
             padding: 25px;
-            animation: slideUp 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s;
         }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         
-        input, select {
-            width: 100%; padding: 15px; margin-top: 10px;
-            background: #0f172a; border: 1px solid #333;
-            color: white; border-radius: 12px; box-sizing: border-box;
-            font-family: 'Cairo';
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        /* INPUTS */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 12px; color: var(--text-sec); }
+        input, select, textarea {
+            width: 100%; padding: 14px;
+            background: #0f172a; border: 1px solid #334155;
+            color: white; border-radius: 12px;
+            font-family: 'Cairo'; font-size: 14px;
+            outline: none;
         }
-        .save-btn { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 15px; color: white; margin-top: 15px; font-weight: bold; cursor: pointer; }
-        .close-btn { background: transparent; color: #94a3b8; margin-top: 10px; }
+        .btn-save { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 14px; font-weight: 700; margin-top: 10px; cursor: pointer; }
+        .btn-close { background: transparent; color: var(--text-sec); margin-top: 10px; width: 100%; border: none; padding: 10px; cursor: pointer; }
+
+        /* Payment Method Radio */
+        .pay-methods { display: flex; gap: 10px; margin-top: 5px; }
+        .pay-option { 
+            flex: 1; padding: 10px; background: #0f172a; border: 1px solid #334155; 
+            border-radius: 10px; text-align: center; font-size: 12px; cursor: pointer; 
+        }
+        .pay-option.selected { background: var(--primary); border-color: var(--primary); color: white; }
+
+        /* Helper Classes */
+        .d-none { display: none !important; }
+        .text-green { color: var(--success); }
+        .text-red { color: var(--danger); }
 
     </style>
 </head>
-
 <body>
 
     <div class="header">
-        <div class="lang-btn" onclick="toggleLang()">EN / AR</div>
-        <div class="brand">Tracky 💎</div>
-    </div>
-
-    <div id="page-home" class="page active">
-        <div class="card balance-card">
-            <div class="eye-icon" onclick="toggleBalance()">👁️</div>
-            <div style="font-size: 14px; opacity: 0.7;">الرصيد الحالي</div>
-            <div class="balance-amount" id="bal">12,500 ج.م</div>
-            <div style="font-size: 12px; color: #4ade80;">+2,100 هذا الشهر</div>
-        </div>
-
-        <div class="actions-grid">
-            <div class="action-btn" onclick="openModal('modal-add')">➕ إضافة</div>
-            <div class="action-btn" style="background: #334155;" onclick="switchTab('page-alerts')">🔔 التنبيهات</div>
-        </div>
-
-        <div class="card">
-            <h3 style="margin: 0 0 15px 0; font-size: 16px;">تحليل المصروفات</h3>
-            <canvas id="expensesChart" height="200"></canvas>
-        </div>
-
-        <div class="card">
-            <h3 style="margin: 0 0 15px 0; font-size: 16px;">آخر العمليات</h3>
-            <div class="trans-item">
-                <div style="display:flex; align-items:center">
-                    <div class="trans-icon">🍔</div>
-                    <div>
-                        <div style="font-weight:600">غداء عمل</div>
-                        <div style="font-size:12px; opacity:0.6">مطعم السلطان</div>
-                    </div>
-                </div>
-                <div class="amount neg">-250 ج.م</div>
-            </div>
-            <div class="trans-item">
-                <div style="display:flex; align-items:center">
-                    <div class="trans-icon">💰</div>
-                    <div>
-                        <div style="font-weight:600">دفعة مشروع</div>
-                        <div style="font-size:12px; opacity:0.6">عميل مستقل</div>
-                    </div>
-                </div>
-                <div class="amount pos">+1,200 ج.م</div>
-            </div>
+        <div class="lang-switch" onclick="toggleLang()" style="font-size:12px; opacity:0.7">EN / AR</div>
+        
+        <div class="action-buttons">
+            <button class="btn-icon btn-add-event" onclick="openModal('modal-event')"><i class="fas fa-bell"></i></button>
+            <button class="btn-icon btn-add-expense" onclick="openModal('modal-trans', 'expense')"><i class="fas fa-minus"></i></button>
+            <button class="btn-icon btn-add-money" onclick="openModal('modal-trans', 'income')"><i class="fas fa-plus"></i></button>
         </div>
     </div>
 
-    <div id="page-wallet" class="page">
-        <h2 style="padding: 0 10px;">سجل المعاملات</h2>
-        <div class="card">
-            <div class="trans-item">
-                <div>🛒 سوبر ماركت</div>
-                <div class="amount neg">-450 ج.م</div>
+    <div id="tab-home" class="list-container active" style="padding-top: 10px;">
+        
+        <div class="balance-container">
+            <div class="eye-toggle" onclick="toggleBalance()"><i class="fas fa-eye" id="eye-icon"></i></div>
+            <div class="total-label" data-i18n="total_balance">الرصيد الكلي</div>
+            <div class="total-amount" id="main-balance">****</div>
+            <div style="font-size: 11px; margin-top: 10px; opacity: 0.6; display:flex; justify-content:center; gap:15px;">
+                <span><i class="fas fa-wallet"></i> <span id="cash-bal">0</span></span>
+                <span><i class="fas fa-university"></i> <span id="bank-bal">0</span></span>
             </div>
-            <div class="trans-item">
-                <div>⛽ بنزين</div>
-                <div class="amount neg">-120 ج.م</div>
+        </div>
+
+        <div class="chart-card">
+            <h4 style="margin:0 0 10px 0; font-size:14px;" data-i18n="analysis">تحليل السيولة</h4>
+            <canvas id="cashFlowChart" height="150"></canvas>
+        </div>
+
+        <div class="section-title">
+            <span data-i18n="financial_alerts">تنبيهات مالية</span>
+            <span onclick="openModal('modal-debts')">📒 <span data-i18n="debts">الديون</span></span>
+        </div>
+        <div class="alerts-scroll" id="financial-alerts-list">
+            <div class="alert-card alert-financial">
+                <div class="alert-title">قسط سيارة</div>
+                <div class="alert-date">يستحق غداً</div>
+                <button class="alert-action">تم الدفع</button>
             </div>
-            <div class="trans-item">
-                <div>💸 تحويل بنكي</div>
-                <div class="amount pos">+5,000 ج.م</div>
+        </div>
+
+        <div class="section-title" style="margin-top: 10px;">
+            <span data-i18n="events">مواعيد ومهام</span>
+        </div>
+        <div class="alerts-scroll" id="events-list">
+            <div class="alert-card alert-event">
+                <div class="alert-title">تمرين السباحة</div>
+                <div class="alert-date">اليوم 6:00 م</div>
+                <button class="alert-action">تم</button>
             </div>
         </div>
     </div>
 
-    <div id="page-alerts" class="page">
-        <h2 style="padding: 0 10px;">التنبيهات والمواعيد</h2>
-        <div class="card" style="border-right: 4px solid #f87171;">
-            <h3>🚨 مستحقات قريبة</h3>
-            <p>فاتورة الإنترنت (450 ج.م) <br> <small>متبقي يومان</small></p>
+    <div id="tab-income" class="list-container" style="padding-top: 20px;">
+        <h2 data-i18n="income_details">تفاصيل الإيرادات</h2>
+        <div id="income-list-render">
+            </div>
+    </div>
+
+    <div id="tab-expense" class="list-container" style="padding-top: 20px;">
+        <h2 data-i18n="expense_details">تفاصيل المصروفات</h2>
+        <div id="expense-list-render">
+            </div>
+    </div>
+
+    <div id="tab-analysis" class="list-container" style="padding-top: 20px;">
+        <h2 data-i18n="profit_centers">مراكز الربحية</h2>
+        
+        <div class="balance-container" style="text-align: right; background: linear-gradient(135deg, #059669 0%, #022c22 100%);">
+            <div class="total-label">🏥 صافي ربح العيادة</div>
+            <div class="total-amount" style="font-size: 24px;" id="clinic-profit">0</div>
+            <div style="font-size: 11px; margin-top:5px;">إيراد: <span id="clinic-in">0</span> | مصروف: <span id="clinic-out">0</span></div>
         </div>
-        <div class="card" style="border-right: 4px solid #3b82f6;">
-            <h3>📅 مواعيد</h3>
-            <p>اجتماع مجلس الإدارة <br> <small>غداً الساعة 10:00 ص</small></p>
+
+        <div class="balance-container" style="text-align: right; background: linear-gradient(135deg, #7c3aed 0%, #2e1065 100%);">
+            <div class="total-label">🎓 صافي ربح التدريس</div>
+            <div class="total-amount" style="font-size: 24px;" id="teaching-profit">0</div>
+            <div style="font-size: 11px; margin-top:5px;">إيراد: <span id="teaching-in">0</span> | مصروف: <span id="teaching-out">0</span></div>
         </div>
     </div>
 
     <div class="nav">
-        <div class="nav-item active" onclick="switchTab('page-home', this)">
-            <span class="nav-icon">🏠</span> الرئيسية
+        <div class="nav-item active" onclick="switchTab('tab-home', this)">
+            <i class="fas fa-home"></i> <span data-i18n="home">الرئيسية</span>
         </div>
-        <div class="nav-item" onclick="switchTab('page-wallet', this)">
-            <span class="nav-icon">💳</span> المحفظة
+        <div class="nav-item" onclick="switchTab('tab-income', this)">
+            <i class="fas fa-arrow-down" style="color: var(--success)"></i> <span data-i18n="income">إيرادات</span>
         </div>
-        <div class="nav-item" onclick="switchTab('page-alerts', this)">
-            <span class="nav-icon">🔔</span> التنبيهات
+        <div class="nav-item" onclick="switchTab('tab-expense', this)">
+            <i class="fas fa-arrow-up" style="color: var(--danger)"></i> <span data-i18n="expenses">مصروفات</span>
         </div>
-        <div class="nav-item">
-            <span class="nav-icon">⚙️</span> الإعدادات
+        <div class="nav-item" onclick="switchTab('tab-analysis', this)">
+            <i class="fas fa-chart-pie"></i> <span data-i18n="reports">تحليل</span>
         </div>
     </div>
 
-    <div class="modal" id="modal-add">
-        <div class="modal-box">
-            <h3>عملية جديدة</h3>
-            <select>
-                <option>مصروف 💸</option>
-                <option>إيراد 💰</option>
-            </select>
-            <input type="number" placeholder="المبلغ">
-            <input type="text" placeholder="الوصف (مثلاً: غداء)">
-            <input type="date">
-            <button class="save-btn">حفظ العملية</button>
-            <button class="save-btn close-btn" onclick="closeModal()">إلغاء</button>
+    <div class="modal" id="modal-trans">
+        <div class="modal-content">
+            <h3 id="trans-title">إضافة جديدة</h3>
+            
+            <div class="form-group">
+                <label data-i18n="amount">المبلغ</label>
+                <input type="number" id="t-amount" placeholder="0.00">
+            </div>
+
+            <div class="form-group">
+                <label data-i18n="method">مكان الحفظ (الخزينة)</label>
+                <div class="pay-methods">
+                    <div class="pay-option selected" onclick="selectMethod(this, 'cash')" data-i18n="cash">نقدي</div>
+                    <div class="pay-option" onclick="selectMethod(this, 'bank')" data-i18n="bank">بنكي</div>
+                    <div class="pay-option" onclick="selectMethod(this, 'wallet')" data-i18n="wallet">محفظة</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label data-i18n="category">التصنيف / المصدر</label>
+                <select id="t-category">
+                    </select>
+            </div>
+            
+            <div class="form-group">
+                <label data-i18n="desc">الوصف (اختياري)</label>
+                <input type="text" id="t-desc" placeholder="مثال: فاتورة نت، قسط...">
+            </div>
+
+            <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+                <input type="checkbox" id="t-is-debt" style="width:20px;">
+                <label for="t-is-debt" style="margin:0; font-size:14px;">تسجيل كدين/سلف؟</label>
+            </div>
+
+            <button class="btn-save" onclick="saveTransaction()" data-i18n="save">حفظ</button>
+            <button class="btn-close" onclick="closeModal()">إلغاء</button>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-event">
+        <div class="modal-content">
+            <h3>إضافة تنبيه / موعد</h3>
+            <input type="text" id="e-title" placeholder="اسم الحدث">
+            <input type="date" id="e-date">
+            <input type="time" id="e-time">
+            <div class="form-group">
+                <label>نوع التنبيه</label>
+                <select id="e-type">
+                    <option value="event">موعد / مهمة (أزرق)</option>
+                    <option value="financial">استحقاق مالي (أحمر)</option>
+                </select>
+            </div>
+            <button class="btn-save" onclick="saveEvent()">حفظ التنبيه</button>
+            <button class="btn-close" onclick="closeModal()">إلغاء</button>
         </div>
     </div>
 
     <script>
-        // 1. TABS LOGIC
-        function switchTab(pageId, navElement) {
-            // إخفاء كل الصفحات
-            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-            // إظهار الصفحة المختارة
-            document.getElementById(pageId).classList.add('active');
-            
-            // تحديث شكل الزر في القائمة (إذا تم الضغط عليه)
-            if(navElement) {
-                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-                navElement.classList.add('active');
-            }
-        }
+        // --- DATA & STATE ---
+        let transactions = JSON.parse(localStorage.getItem('erp_trans')) || [];
+        let events = JSON.parse(localStorage.getItem('erp_events')) || [];
+        let lang = localStorage.getItem('erp_lang') || 'ar';
+        let showBalance = false;
+        let currentMethod = 'cash';
+        let currentType = 'expense'; // or income
 
-        // 2. MODAL LOGIC
-        function openModal(modalId) {
-            document.getElementById(modalId).style.display = "flex";
-        }
-        function closeModal() {
-            document.querySelectorAll('.modal').forEach(m => m.style.display = "none");
-        }
-        // إغلاق المودال عند الضغط في الفراغ
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                closeModal();
-            }
-        }
-
-        // 3. BALANCE TOGGLE
-        let isHidden = false;
-        function toggleBalance() {
-            const el = document.getElementById("bal");
-            if (!isHidden) {
-                el.dataset.val = el.innerText;
-                el.innerText = "****";
-            } else {
-                el.innerText = el.dataset.val;
-            }
-            isHidden = !isHidden;
-        }
-
-        // 4. CHART JS (الرسم البياني)
-        const ctx = document.getElementById('expensesChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['طعام', 'مواصلات', 'فواتير'],
-                datasets: [{
-                    data: [300, 150, 450],
-                    backgroundColor: ['#f87171', '#fbbf24', '#3b82f6'],
-                    borderWidth: 0
-                }]
+        // --- DICTIONARY ---
+        const dict = {
+            ar: {
+                total_balance: "الرصيد الكلي", analysis: "تحليل السيولة", financial_alerts: "تنبيهات مالية",
+                debts: "الديون", events: "مواعيد ومهام", income_details: "تفاصيل الإيرادات",
+                expense_details: "تفاصيل المصروفات", profit_centers: "مراكز الربحية",
+                home: "الرئيسية", income: "إيرادات", expenses: "مصروفات", reports: "تحليل",
+                amount: "المبلغ", method: "طريقة الدفع", category: "التصنيف", desc: "الوصف", save: "حفظ",
+                cash: "نقدي", bank: "بنك", wallet: "محفظة"
             },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { position: 'bottom', labels: { color: 'white' } }
-                }
+            en: {
+                total_balance: "Total Balance", analysis: "Cash Flow", financial_alerts: "Financial Alerts",
+                debts: "Debts", events: "Events & To-Do", income_details: "Income Details",
+                expense_details: "Expense Details", profit_centers: "Profit Centers",
+                home: "Home", income: "Income", expenses: "Expenses", reports: "Reports",
+                amount: "Amount", method: "Method", category: "Category", desc: "Description", save: "Save",
+                cash: "Cash", bank: "Bank", wallet: "Wallet"
             }
-        });
+        };
 
-        // 5. LANGUAGE (Simple Toggle for demo)
-        let ar = true;
-        function toggleLang(){
-            ar = !ar;
-            document.documentElement.dir = ar ? "rtl" : "ltr";
-            document.documentElement.lang = ar ? "ar" : "en";
-            // هنا يمكنك إضافة منطق لتغيير النصوص
+        // --- CATEGORIES ---
+        const categories = {
+            income: [
+                {val: 'clinic', txt: '🏥 العيادة (يومي)'},
+                {val: 'teaching_1', txt: '🎓 تدريس - فرقة 1'},
+                {val: 'teaching_2', txt: '🎓 تدريس - فرقة 2'},
+                {val: 'consulting', txt: '⚖️ استشارات محاسبية'},
+                {val: 'asset_rent', txt: '🏍️ إيجار دراجة'},
+                {val: 'other_in', txt: '💰 إيراد آخر'}
+            ],
+            expense: [
+                {val: 'clinic_ops', txt: '🏥 العيادة (تشغيل/مرتبات)'},
+                {val: 'teaching_ops', txt: '🎓 التدريس (منصة/طباعة)'},
+                {val: 'home_rent', txt: '🏠 إيجار منزلي'},
+                {val: 'utilities', txt: '💡 مرافق (كهرباء/نت)'},
+                {val: 'subs', txt: '🎬 اشتراكات (Netflix/Google)'},
+                {val: 'family', txt: '👨‍👩‍👧 عائلة (دروس/تمارين)'},
+                {val: 'personal', txt: '🛒 شخصي (طعام/مواصلات)'}
+            ]
+        };
+
+        // --- INIT ---
+        window.onload = function() {
+            renderApp();
+            updateChart();
+            applyLang();
+        };
+
+        // --- CORE FUNCTIONS ---
+        function renderApp() {
+            // 1. Calculate Totals
+            let total = 0, cash = 0, bank = 0, wallet = 0;
+            let clinicIn = 0, clinicOut = 0;
+            let teachingIn = 0, teachingOut = 0;
+
+            const incList = document.getElementById('income-list-render');
+            const expList = document.getElementById('expense-list-render');
+            incList.innerHTML = ''; expList.innerHTML = '';
+
+            transactions.forEach(t => {
+                const amount = parseFloat(t.amount);
+                
+                // Balances
+                if(t.type === 'income') {
+                    total += amount;
+                    if(t.method === 'cash') cash += amount;
+                    if(t.method === 'bank') bank += amount;
+                    if(t.method === 'wallet') wallet += amount;
+                    
+                    // Cost Centers
+                    if(t.cat.includes('clinic')) clinicIn += amount;
+                    if(t.cat.includes('teaching')) teachingIn += amount;
+
+                    // Render List
+                    incList.innerHTML += createItemHTML(t);
+
+                } else {
+                    total -= amount;
+                    if(t.method === 'cash') cash -= amount;
+                    if(t.method === 'bank') bank -= amount;
+                    if(t.method === 'wallet') wallet -= amount;
+
+                    if(t.cat.includes('clinic')) clinicOut += amount;
+                    if(t.cat.includes('teaching')) teachingOut += amount;
+
+                    expList.innerHTML += createItemHTML(t);
+                }
+            });
+
+            // Update UI Balance
+            document.getElementById('main-balance').dataset.val = total.toLocaleString() + ' ج.م';
+            document.getElementById('cash-bal').innerText = cash.toLocaleString();
+            document.getElementById('bank-bal').innerText = bank.toLocaleString();
+            
+            if(showBalance) document.getElementById('main-balance').innerText = document.getElementById('main-balance').dataset.val;
+
+            // Update Profit Centers
+            document.getElementById('clinic-in').innerText = clinicIn;
+            document.getElementById('clinic-out').innerText = clinicOut;
+            document.getElementById('clinic-profit').innerText = (clinicIn - clinicOut).toLocaleString() + ' ج.م';
+            
+            document.getElementById('teaching-in').innerText = teachingIn;
+            document.getElementById('teaching-out').innerText = teachingOut;
+            document.getElementById('teaching-profit').innerText = (teachingIn - teachingOut).toLocaleString() + ' ج.م';
+
+            renderEvents();
+        }
+
+        function createItemHTML(t) {
+            let color = t.type === 'income' ? 'var(--success)' : 'var(--danger)';
+            let icon = t.type === 'income' ? '+' : '-';
+            let catName = getCatName(t.cat, t.type);
+            
+            return `
+            <div class="list-item">
+                <div class="item-details">
+                    <h4>${catName}</h4>
+                    <p>${t.desc || 'بدون وصف'} | ${t.date}</p>
+                </div>
+                <div class="item-amount" style="color: ${color}">
+                    ${icon}${parseFloat(t.amount).toLocaleString()}
+                </div>
+            </div>`;
+        }
+
+        function getCatName(val, type) {
+            let found = categories[type].find(c => c.val === val);
+            return found ? found.txt : val;
+        }
+
+        function renderEvents() {
+            const fList = document.getElementById('financial-alerts-list');
+            const eList = document.getElementById('events-list');
+            fList.innerHTML = ''; eList.innerHTML = '';
+
+            events.forEach((e, index) => {
+                let html = `
+                <div class="alert-card ${e.type === 'financial' ? 'alert-financial' : 'alert-event'}">
+                    <div>
+                        <div class="alert-title">${e.title}</div>
+                        <div class="alert-date">${e.date} | ${e.time}</div>
+                    </div>
+                    <button class="alert-action" onclick="deleteEvent(${index})">
+                        ${e.type === 'financial' ? 'تم الدفع ✅' : 'تم الإنجاز ✅'}
+                    </button>
+                </div>`;
+
+                if(e.type === 'financial') fList.innerHTML += html;
+                else eList.innerHTML += html;
+            });
+            
+            if(fList.innerHTML === '') fList.innerHTML = '<div style="font-size:12px; opacity:0.5; padding:10px;">لا توجد تنبيهات مالية</div>';
+        }
+
+        // --- ACTIONS ---
+        function openModal(id, type = null) {
+            document.getElementById(id).style.display = 'flex';
+            if(id === 'modal-trans' && type) {
+                currentType = type;
+                document.getElementById('trans-title').innerText = type === 'income' ? 'تسجيل إيراد 💰' : 'تسجيل مصروف 💸';
+                
+                // Populate Categories
+                const sel = document.getElementById('t-category');
+                sel.innerHTML = '';
+                categories[type].forEach(c => {
+                    let opt = document.createElement('option');
+                    opt.value = c.val; opt.innerText = c.txt;
+                    sel.appendChild(opt);
+                });
+            }
+        }
+
+        function closeModal() {
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+        }
+
+        function selectMethod(el, method) {
+            document.querySelectorAll('.pay-option').forEach(d => d.classList.remove('selected'));
+            el.classList.add('selected');
+            currentMethod = method;
+        }
+
+        function saveTransaction() {
+            const amount = document.getElementById('t-amount').value;
+            const cat = document.getElementById('t-category').value;
+            const desc = document.getElementById('t-desc').value;
+            const isDebt = document.getElementById('t-is-debt').checked;
+
+            if(!amount) return alert('أدخل المبلغ');
+
+            // Debt Logic (Simplified for now)
+            let finalDesc = desc;
+            if(isDebt) finalDesc = `[دين/سلف] ${desc}`;
+
+            const trans = {
+                id: Date.now(),
+                type: currentType,
+                amount: amount,
+                method: currentMethod,
+                cat: cat,
+                desc: finalDesc,
+                date: new Date().toLocaleDateString('en-GB')
+            };
+
+            transactions.unshift(trans);
+            localStorage.setItem('erp_trans', JSON.stringify(transactions));
+            
+            closeModal();
+            renderApp();
+            updateChart();
+            
+            // Clear inputs
+            document.getElementById('t-amount').value = '';
+            document.getElementById('t-desc').value = '';
+        }
+
+        function saveEvent() {
+            const title = document.getElementById('e-title').value;
+            const date = document.getElementById('e-date').value;
+            const time = document.getElementById('e-time').value;
+            const type = document.getElementById('e-type').value;
+
+            if(!title) return;
+
+            events.push({ title, date, time, type });
+            localStorage.setItem('erp_events', JSON.stringify(events));
+            closeModal();
+            renderEvents();
+        }
+
+        function deleteEvent(index) {
+            if(confirm('هل أنت متأكد؟')) {
+                events.splice(index, 1);
+                localStorage.setItem('erp_events', JSON.stringify(events));
+                renderEvents();
+            }
+        }
+
+        // --- UI UTILS ---
+        function switchTab(tabId, navEl) {
+            document.querySelectorAll('.list-container').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            navEl.classList.add('active');
+        }
+
+        function toggleBalance() {
+            showBalance = !showBalance;
+            const el = document.getElementById('main-balance');
+            const icon = document.getElementById('eye-icon');
+            
+            if(showBalance) {
+                el.innerText = el.dataset.val;
+                icon.className = "fas fa-eye-slash";
+            } else {
+                el.innerText = "****";
+                icon.className = "fas fa-eye";
+            }
+        }
+
+        function toggleLang() {
+            lang = lang === 'ar' ? 'en' : 'ar';
+            localStorage.setItem('erp_lang', lang);
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            document.documentElement.lang = lang;
+            applyLang();
+        }
+
+        function applyLang() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(dict[lang][key]) el.innerText = dict[lang][key];
+            });
+        }
+
+        // --- CHART ---
+        function updateChart() {
+            const ctx = document.getElementById('cashFlowChart').getContext('2d');
+            
+            // Calc logic for chart
+            let inc = transactions.filter(t=>t.type==='income').reduce((a,b)=>a+parseFloat(b.amount),0);
+            let exp = transactions.filter(t=>t.type==='expense').reduce((a,b)=>a+parseFloat(b.amount),0);
+
+            if(window.myChart) window.myChart.destroy();
+            
+            window.myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [lang==='ar'?'الدخل':'Income', lang==='ar'?'المصروف':'Expense'],
+                    datasets: [{
+                        label: 'Cash Flow',
+                        data: [inc, exp],
+                        backgroundColor: ['#10b981', '#ef4444'],
+                        borderRadius: 10,
+                        barThickness: 30
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        y: { display: false },
+                        x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+                    }
+                }
+            });
         }
     </script>
 </body>
