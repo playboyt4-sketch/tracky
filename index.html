@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Family ERP V4</title>
+    <title>Tracky Pro V5</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root { --bg: #0f172a; --surface: #1e293b; --primary: #3b82f6; --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --text: #f8fafc; --text-sec: #94a3b8; }
+        :root { --bg: #0f172a; --surface: #1e293b; --primary: #3b82f6; --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --text: #f8fafc; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; font-family: 'Cairo', sans-serif; background-color: var(--bg); color: var(--text); padding-bottom: 90px; }
 
         /* HEADER & LOCK */
         #lock-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .pin-dots { display: flex; gap: 15px; margin-bottom: 30px; }
-        .pin-dot { width: 15px; height: 15px; border-radius: 50%; border: 2px solid var(--text-sec); }
+        .pin-dot { width: 15px; height: 15px; border-radius: 50%; border: 2px solid #94a3b8; }
         .pin-dot.filled { background: var(--primary); border-color: var(--primary); }
         .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .num-btn { width: 65px; height: 65px; border-radius: 50%; background: var(--surface); color: white; font-size: 22px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
@@ -27,39 +27,34 @@
         .balance-card { text-align: center; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
         .total-amount { font-size: 34px; font-weight: 800; margin: 10px 0; }
         
-        /* QUICK ACTIONS for WIFE */
+        /* ANALYSIS GRID */
+        .biz-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #334155; font-size: 13px; }
+        .biz-row:last-child { border: none; }
+        .tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: #334155; margin-left: 5px; }
+
+        /* QUICK ACTIONS */
         .quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px; }
         .quick-btn { background: var(--surface); border: 1px solid #334155; padding: 10px 5px; border-radius: 12px; text-align: center; font-size: 11px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .quick-btn i { font-size: 18px; color: var(--accent); }
 
-        /* TRANSACTION LIST */
-        .trans-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #334155; }
-        .trans-info h4 { margin: 0; font-size: 14px; }
-        .trans-info span { font-size: 11px; opacity: 0.6; }
-        .trans-amount { font-weight: bold; font-size: 14px; }
-        .del-btn { color: var(--danger); background: none; border: none; padding: 5px 10px; cursor: pointer; font-size: 12px; }
-
-        /* TABS & NAV */
+        /* TABS */
         .tab-content { display: none; animation: fadeIn 0.3s; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* NAV & MODAL */
         .nav { position: fixed; bottom: 0; width: 100%; background: #0f172a; padding: 10px 0; display: flex; justify-content: space-around; border-top: 1px solid #334155; z-index: 200; }
         .nav-item { text-align: center; font-size: 10px; opacity: 0.6; transition: 0.3s; }
         .nav-item.active { opacity: 1; color: var(--primary); transform: translateY(-3px); }
         .nav-icon { font-size: 20px; margin-bottom: 4px; display: block; }
 
-        /* MODALS */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; display: none; justify-content: center; align-items: flex-end; }
         .modal-box { background: var(--surface); width: 100%; max-width: 500px; padding: 25px; border-radius: 25px 25px 0 0; max-height: 90vh; overflow-y: auto; }
         
         input, select { width: 100%; padding: 14px; background: var(--bg); border: 1px solid #334155; color: white; border-radius: 12px; margin-bottom: 10px; font-family: 'Cairo'; outline: none; }
         .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 5px; }
         .btn-primary { background: var(--primary); color: white; }
-        
         .fab { position: fixed; bottom: 85px; left: 20px; width: 55px; height: 55px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; box-shadow: 0 5px 20px rgba(59, 130, 246, 0.4); z-index: 190; cursor: pointer; }
         
-        /* ADVICE BOX */
         .advice-box { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); padding: 10px; border-radius: 8px; font-size: 11px; margin-bottom: 10px; display: none; }
     </style>
 </head>
@@ -89,60 +84,64 @@
 
     <div id="app-content" style="display:none">
         <div class="header">
-            <div style="font-weight:800; font-size:18px;">Tracky ERP 💎</div>
+            <div style="font-weight:800; font-size:18px;">Tracky ERP V5</div>
             <button onclick="exportData()" style="background:none; border:none; color:#f59e0b; font-size:18px;"><i class="fas fa-save"></i></button>
         </div>
 
         <div id="tab-home" class="tab-content active">
             <div class="card balance-card">
-                <div style="font-size: 12px; opacity: 0.7;">صافي السيولة (بدون ديون الفيزا)</div>
+                <div style="font-size: 12px; opacity: 0.7;">صافي السيولة النقدية</div>
                 <div class="total-amount" id="net-balance">0</div>
                 <div style="display:flex; justify-content:center; gap:15px; font-size:11px;">
-                    <span style="color:#ef4444">عليك للفيزا: <span id="visa-debt">0</span></span>
-                    <span style="color:#10b981">لك برة: <span id="my-credits">0</span></span>
+                    <span style="color:#ef4444">مديونية فيزا: <span id="visa-debt">0</span></span>
+                    <span style="color:#10b981">لك عند الغير: <span id="my-credits">0</span></span>
                 </div>
             </div>
 
             <div class="quick-grid">
-                <div class="quick-btn" onclick="quickAdd('خضار/فاكهة', 0, 'groceries')"><i class="fas fa-carrot" style="color:#10b981"></i> خضار</div>
-                <div class="quick-btn" onclick="quickAdd('سوبر ماركت', 0, 'groceries')"><i class="fas fa-shopping-cart" style="color:#3b82f6"></i> ماركت</div>
-                <div class="quick-btn" onclick="quickAdd('صيدلية/دواء', 0, 'family')"><i class="fas fa-pills" style="color:#ef4444"></i> دواء</div>
-                <div class="quick-btn" onclick="quickAdd('مواصلات', 0, 'personal')"><i class="fas fa-taxi" style="color:#f59e0b"></i> تاكسي</div>
+                <div class="quick-btn" onclick="quickAdd('خضار/فاكهة', 'groceries')"><i class="fas fa-carrot" style="color:#10b981"></i> خضار</div>
+                <div class="quick-btn" onclick="quickAdd('سوبر ماركت', 'groceries')"><i class="fas fa-shopping-cart" style="color:#3b82f6"></i> ماركت</div>
+                <div class="quick-btn" onclick="quickAdd('صيدلية/دواء', 'family')"><i class="fas fa-pills" style="color:#ef4444"></i> دواء</div>
+                <div class="quick-btn" onclick="quickAdd('بنزين', 'car')"><i class="fas fa-gas-pump" style="color:#f59e0b"></i> بنزين</div>
             </div>
 
             <div class="card">
-                <h4 style="margin:0 0 10px 0;">📝 آخر العمليات (للتعديل)</h4>
+                <h4 style="margin:0 0 10px 0;">📝 آخر العمليات</h4>
                 <div id="recent-history"></div>
             </div>
         </div>
 
         <div id="tab-analysis" class="tab-content">
-            <h2 style="padding:0 15px;">📊 التحليل الذكي</h2>
-            <div class="card">
-                <input type="text" placeholder="ابحث عن سلعة (نسكافيه، بنزين)..." onkeyup="analyzeItem(this.value)">
-                <div id="analysis-result" style="font-size:12px; margin-top:10px; opacity:0.7"></div>
-            </div>
+            <h2 style="padding:0 15px;">📊 تقارير الأعمال</h2>
             
             <div class="card">
-                <h3>👧 مصاريف العائلة</h3>
-                <h1 id="family-total" style="color:#ec4899">0</h1>
-                <p style="font-size:11px; opacity:0.6">يشمل الدروس، التمارين، الصيدلية</p>
+                <h3 style="color:#8b5cf6">🎓 إيرادات التدريس</h3>
+                <div id="teaching-stats"></div>
+            </div>
+
+            <div class="card">
+                <h3 style="color:#10b981">🏥 إيرادات العيادة</h3>
+                <div id="clinic-stats"></div>
+            </div>
+
+            <div class="card">
+                <h3>🔍 بحث ذكي في المصروفات</h3>
+                <input type="text" placeholder="اسم السلعة (نسكافيه...)" onkeyup="analyzeItem(this.value)">
+                <div id="analysis-result" style="font-size:12px; margin-top:10px;"></div>
             </div>
         </div>
 
         <div id="tab-services" class="tab-content">
             <div class="card">
-                <div style="display:flex; justify-content:space-between;">
-                    <h3>🚗 السيارة</h3>
-                    <button onclick="openModal('modal-oil')" style="background:#3b82f6; border:none; color:white; border-radius:5px; padding:5px 10px;">تسجيل صيانة</button>
-                </div>
+                <h3>🚗 السيارة</h3>
+                <button onclick="openModal('modal-oil')" class="btn" style="background:#3b82f6; padding:10px;">تسجيل صيانة</button>
                 <div id="car-info" style="font-size:12px; margin-top:10px;"></div>
             </div>
 
             <div class="card">
                 <h3>🔄 اشتراكات وفواتير</h3>
                 <div id="subs-alert-box"></div>
-                <button onclick="openModal('modal-sub')" class="btn" style="background:#334155; margin-top:10px;">+ اشتراك جديد</button>
+                <button onclick="openModal('modal-sub')" class="btn" style="background:#334155; padding:10px; margin-top:10px;">+ اشتراك جديد</button>
             </div>
         </div>
 
@@ -150,38 +149,35 @@
 
         <div class="nav">
             <div class="nav-item active" onclick="switchTab('tab-home', this)"><i class="fas fa-home nav-icon"></i> الرئيسية</div>
-            <div class="nav-item" onclick="switchTab('tab-analysis', this)"><i class="fas fa-chart-pie nav-icon"></i> التحليل</div>
-            <div class="nav-item" onclick="switchTab('tab-services', this)"><i class="fas fa-car nav-icon"></i> خدمات</div>
+            <div class="nav-item" onclick="switchTab('tab-analysis', this)"><i class="fas fa-chart-line nav-icon"></i> التقارير</div>
+            <div class="nav-item" onclick="switchTab('tab-services', this)"><i class="fas fa-cogs nav-icon"></i> خدمات</div>
         </div>
     </div>
 
     <div class="modal" id="modal-trans">
         <div class="modal-box">
-            <h3>إضافة جديدة</h3>
-            <select id="t-type" onchange="toggleFields()">
+            <h3>إضافة عملية</h3>
+            <select id="t-type" onchange="updateCategories()">
                 <option value="expense">💸 مصروف</option>
                 <option value="income">💰 إيراد</option>
             </select>
             
+            <select id="t-cat">
+                </select>
+
             <input type="number" id="t-amount" placeholder="المبلغ">
             
-            <input type="text" id="t-item" list="items-list" placeholder="اسم البند (ابحث هنا...)" oninput="checkAdvice()">
-            <datalist id="items-list"></datalist> <div id="smart-advice" class="advice-box"></div>
+            <div id="smart-inputs">
+                <input type="text" id="t-item" list="items-list" placeholder="اسم البند (ابحث...)" oninput="checkAdvice()">
+                <datalist id="items-list"></datalist>
+                <div id="smart-advice" class="advice-box"></div>
+                <input type="text" id="t-vendor" placeholder="المكان (كارفور، كشك..)">
+            </div>
 
             <select id="t-method">
-                <option value="cash">💵 كاش (خزينة)</option>
-                <option value="visa">💳 فيزا (آجل/دين)</option>
+                <option value="cash">💵 كاش</option>
+                <option value="visa">💳 فيزا (آجل)</option>
             </select>
-
-            <select id="t-cat" style="display:block">
-                <option value="groceries">🛒 سوبر ماركت</option>
-                <option value="family">👧 عائلة ودروس</option>
-                <option value="car">🚗 سيارة</option>
-                <option value="personal">👔 شخصي</option>
-                <option value="bills">💡 فواتير</option>
-            </select>
-
-            <input type="text" id="t-vendor" placeholder="المكان (كارفور، كشك..)">
 
             <button class="btn btn-primary" onclick="saveTrans()">حفظ</button>
             <button class="btn" style="background:transparent; color:#94a3b8" onclick="closeModal()">إلغاء</button>
@@ -190,9 +186,9 @@
 
     <div class="modal" id="modal-oil">
         <div class="modal-box">
-            <h3>صيانة سيارة 🔧</h3>
-            <input type="number" id="o-km" placeholder="عداد الكيلومتر">
-            <input type="text" id="o-note" placeholder="ملاحظة (زيت، فلاتر..)">
+            <h3>صيانة سيارة</h3>
+            <input type="number" id="o-km" placeholder="العداد (KM)">
+            <input type="text" id="o-note" placeholder="ملاحظات">
             <input type="number" id="o-cost" placeholder="التكلفة">
             <button class="btn btn-primary" onclick="saveOil()">حفظ</button>
             <button class="btn" style="background:transparent" onclick="closeModal()">إلغاء</button>
@@ -201,8 +197,8 @@
 
     <div class="modal" id="modal-sub">
         <div class="modal-box">
-            <h3>اشتراك جديد 🔄</h3>
-            <input type="text" id="s-name" placeholder="الاسم (نت، جيم..)">
+            <h3>اشتراك جديد</h3>
+            <input type="text" id="s-name" placeholder="الاسم">
             <input type="number" id="s-cost" placeholder="القيمة">
             <input type="number" id="s-day" placeholder="يوم الاستحقاق (1-30)">
             <button class="btn btn-primary" onclick="saveSub()">حفظ</button>
@@ -211,15 +207,41 @@
     </div>
 
     <script>
-        // DATA
-        let db = {
-            trans: JSON.parse(localStorage.getItem('erp_v4_trans')) || [],
-            subs: JSON.parse(localStorage.getItem('erp_v4_subs')) || [],
-            car: JSON.parse(localStorage.getItem('erp_v4_car')) || [],
-            pin: localStorage.getItem('erp_v4_pin') || '0000'
+        // CONFIG & DATA
+        const categories = {
+            income: [
+                {val: 'clinic_center', txt: '🏥 عيادة - المركز'},
+                {val: 'clinic_private', txt: '🏥 عيادة - حالات خاصة'},
+                {val: 'clinic_meds', txt: '💊 عيادة - أدوية'},
+                {val: 'clinic_hosp', txt: '🏥 مستشفى (مرتب)'},
+                {val: 'teach_1', txt: '🎓 تدريس - فرقة 1'},
+                {val: 'teach_2', txt: '🎓 تدريس - فرقة 2'},
+                {val: 'teach_3', txt: '🎓 تدريس - فرقة 3'},
+                {val: 'teach_4', txt: '🎓 تدريس - فرقة 4'},
+                {val: 'platform', txt: '💻 منصة تعليمية'},
+                {val: 'consulting', txt: '⚖️ استشارات'},
+                {val: 'bike', txt: '🏍️ إيجار دراجة'},
+                {val: 'other_in', txt: '💰 إيراد آخر'}
+            ],
+            expense: [
+                {val: 'groceries', txt: '🛒 سوبر ماركت/طلبات'},
+                {val: 'family', txt: '👧 عائلة/دروس/تطعيم'},
+                {val: 'car', txt: '🚗 سيارة/بنزين'},
+                {val: 'bills', txt: '💡 فواتير/اشتراكات'},
+                {val: 'personal', txt: '👔 شخصي/نسكافيه'},
+                {val: 'clinic_ops', txt: '🏥 مصروفات عيادة'},
+                {val: 'teach_ops', txt: '🎓 مصروفات تدريس'}
+            ]
         };
 
-        // --- 1. SECURITY ---
+        let db = {
+            trans: JSON.parse(localStorage.getItem('erp_v5_trans')) || [],
+            subs: JSON.parse(localStorage.getItem('erp_v5_subs')) || [],
+            car: JSON.parse(localStorage.getItem('erp_v5_car')) || [],
+            pin: localStorage.getItem('erp_v5_pin') || '0000'
+        };
+
+        // --- SECURITY ---
         let enteredPin = '';
         function enterPin(n) {
             if(enteredPin.length < 4) {
@@ -229,136 +251,155 @@
             }
         }
         function clearPin() { enteredPin = ''; updateDots(); }
-        function updateDots() {
-            document.querySelectorAll('.pin-dot').forEach((d,i) => d.classList.toggle('filled', i < enteredPin.length));
-        }
+        function updateDots() { document.querySelectorAll('.pin-dot').forEach((d,i)=>d.classList.toggle('filled', i<enteredPin.length)); }
         function checkPin() {
             if(enteredPin === db.pin) {
                 document.getElementById('lock-screen').style.display = 'none';
                 document.getElementById('app-content').style.display = 'block';
                 initApp();
-            } else {
-                alert('الرمز خطأ'); enteredPin = ''; updateDots();
-            }
+            } else { alert('رمز خطأ'); enteredPin=''; updateDots(); }
         }
 
-        // --- 2. CORE FUNCTIONS ---
+        // --- APP LOGIC ---
         function initApp() {
+            updateCategories();
             renderBalance();
             renderHistory();
+            renderBizStats();
+            renderServices();
             populateAutoComplete();
-            renderCar();
-            renderSubs();
+        }
+
+        function updateCategories() {
+            const type = document.getElementById('t-type').value;
+            const sel = document.getElementById('t-cat');
+            sel.innerHTML = '';
+            categories[type].forEach(c => {
+                sel.innerHTML += `<option value="${c.val}">${c.txt}</option>`;
+            });
+            
+            // Hide smart shopper inputs if Income
+            document.getElementById('smart-inputs').style.display = type === 'expense' ? 'block' : 'none';
         }
 
         function renderBalance() {
-            let liquid = 0;
-            let visaDebt = 0;
-            let family = 0;
-
+            let liquid = 0, visa = 0, credit = 0;
             db.trans.forEach(t => {
                 if(t.type === 'income') liquid += parseFloat(t.amount);
                 else {
-                    if(t.method === 'visa') visaDebt += parseFloat(t.amount); // Visa doesn't reduce cash now
-                    else liquid -= parseFloat(t.amount); // Cash reduces cash
+                    if(t.method === 'visa') visa += parseFloat(t.amount);
+                    else liquid -= parseFloat(t.amount);
+                }
+            });
+            document.getElementById('net-balance').innerText = liquid.toLocaleString() + ' ج.م';
+            document.getElementById('visa-debt').innerText = visa.toLocaleString();
+        }
 
-                    if(t.cat === 'family') family += parseFloat(t.amount);
+        function renderBizStats() {
+            // Calculate Totals per Category
+            let stats = {};
+            db.trans.forEach(t => {
+                if(t.type === 'income') {
+                    if(!stats[t.cat]) stats[t.cat] = 0;
+                    stats[t.cat] += parseFloat(t.amount);
                 }
             });
 
-            document.getElementById('net-balance').innerText = liquid.toLocaleString() + ' ج.م';
-            document.getElementById('visa-debt').innerText = visaDebt.toLocaleString();
-            document.getElementById('family-total').innerText = family.toLocaleString() + ' ج.م';
+            // Helper to render
+            const renderRows = (prefix, elId) => {
+                const el = document.getElementById(elId);
+                el.innerHTML = '';
+                const cats = categories.income.filter(c => c.val.startsWith(prefix));
+                let total = 0;
+                cats.forEach(c => {
+                    const val = stats[c.val] || 0;
+                    total += val;
+                    if(val > 0) {
+                        el.innerHTML += `
+                        <div class="biz-row">
+                            <span>${c.txt}</span>
+                            <span style="font-weight:bold">${val.toLocaleString()}</span>
+                        </div>`;
+                    }
+                });
+                if(total === 0) el.innerHTML = '<div style="opacity:0.5; font-size:12px;">لا توجد بيانات</div>';
+                else el.innerHTML += `<div style="border-top:1px dashed #555; margin-top:5px; padding-top:5px; font-weight:bold; text-align:left;">الإجمالي: ${total.toLocaleString()}</div>`;
+            };
+
+            renderRows('teach', 'teaching-stats');
+            renderRows('clinic', 'clinic-stats');
+        }
+
+        function saveTrans() {
+            const trans = {
+                id: Date.now(),
+                type: document.getElementById('t-type').value,
+                cat: document.getElementById('t-cat').value,
+                amount: document.getElementById('t-amount').value,
+                item: document.getElementById('t-item').value,
+                vendor: document.getElementById('t-vendor').value,
+                method: document.getElementById('t-method').value,
+                date: new Date().toLocaleDateString('en-GB')
+            };
+
+            if(!trans.amount) return;
+            
+            // Use Category Name as Item if Item is empty (for income)
+            if(!trans.item && trans.type === 'income') {
+                const catObj = categories.income.find(c => c.val === trans.cat);
+                trans.item = catObj ? catObj.txt : trans.cat;
+            }
+
+            db.trans.unshift(trans);
+            saveAll(); closeModal(); initApp();
+            
+            // Reset
+            document.getElementById('t-amount').value = '';
+            document.getElementById('t-item').value = '';
+        }
+
+        // Helper Functions (Same as V4 but optimized)
+        function quickAdd(item, cat) {
+            document.getElementById('t-type').value = 'expense';
+            updateCategories();
+            document.getElementById('t-cat').value = cat;
+            document.getElementById('t-item').value = item;
+            openModal('modal-trans');
+            document.getElementById('t-amount').focus();
+        }
+
+        function checkAdvice() {
+            const val = document.getElementById('t-item').value;
+            if(val.length < 3) return;
+            const history = db.trans.filter(t => t.item && t.item.includes(val));
+            if(history.length > 0) {
+                history.sort((a,b)=>parseFloat(a.amount)-parseFloat(b.amount));
+                document.getElementById('smart-advice').style.display = 'block';
+                document.getElementById('smart-advice').innerHTML = `💡 أفضل سعر: ${history[0].amount} (${history[0].vendor})`;
+            }
         }
 
         function renderHistory() {
-            const list = document.getElementById('recent-history');
-            list.innerHTML = '';
-            // Show last 20
-            db.trans.slice(0, 20).forEach((t, index) => {
-                list.innerHTML += `
-                <div class="trans-item">
-                    <div class="trans-info">
-                        <h4>${t.item || t.cat} <span style="font-size:10px; background:#333; padding:2px 5px; border-radius:4px;">${t.method === 'visa' ? 'فيزا' : 'كاش'}</span></h4>
-                        <span>${t.date} | ${t.vendor || '-'}</span>
+            const el = document.getElementById('recent-history');
+            el.innerHTML = '';
+            db.trans.slice(0, 20).forEach((t, idx) => {
+                const color = t.type === 'income' ? '#10b981' : '#ef4444';
+                el.innerHTML += `
+                <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #333; font-size:13px;">
+                    <div>
+                        <div style="font-weight:600">${t.item || t.cat}</div>
+                        <div style="font-size:10px; opacity:0.6">${t.date} | ${t.vendor||''}</div>
                     </div>
                     <div style="display:flex; align-items:center; gap:10px;">
-                        <span class="trans-amount" style="color:${t.type==='income'?'#10b981':'#ef4444'}">
-                            ${t.amount}
-                        </span>
-                        <button class="del-btn" onclick="deleteTrans(${index})"><i class="fas fa-trash"></i></button>
+                        <span style="color:${color}; font-weight:bold">${t.amount}</span>
+                        <i class="fas fa-trash" style="color:#ef4444; cursor:pointer;" onclick="delTrans(${idx})"></i>
                     </div>
                 </div>`;
             });
         }
 
-        function deleteTrans(index) {
-            if(confirm('هل تريد حذف هذه العملية وتصحيح الرصيد؟')) {
-                db.trans.splice(index, 1);
-                saveAll();
-                initApp();
-            }
-        }
-
-        // --- 3. SMART FEATURES ---
-        function populateAutoComplete() {
-            // Get unique items names
-            const items = [...new Set(db.trans.map(t => t.item))];
-            const datalist = document.getElementById('items-list');
-            datalist.innerHTML = '';
-            items.forEach(i => {
-                if(i) datalist.innerHTML += `<option value="${i}">`;
-            });
-        }
-
-        function checkAdvice() {
-            const input = document.getElementById('t-item').value;
-            if(input.length < 3) return;
-            
-            // Case insensitive search
-            const history = db.trans.filter(t => t.item && t.item.toLowerCase() === input.toLowerCase());
-            if(history.length > 0) {
-                history.sort((a,b) => parseFloat(a.amount) - parseFloat(b.amount));
-                const best = history[0];
-                document.getElementById('smart-advice').style.display = 'block';
-                document.getElementById('smart-advice').innerHTML = `💡 اشتريته سابقاً بـ <b>${best.amount}</b> من <b>${best.vendor}</b>`;
-            } else {
-                document.getElementById('smart-advice').style.display = 'none';
-            }
-        }
-
-        function quickAdd(item, amount, cat) {
-            document.getElementById('t-item').value = item;
-            document.getElementById('t-cat').value = cat;
-            document.getElementById('t-amount').value = amount || '';
-            openModal('modal-trans');
-            if(amount === 0) document.getElementById('t-amount').focus();
-        }
-
-        // --- 4. DATA SAVING ---
-        function saveTrans() {
-            const trans = {
-                id: Date.now(),
-                type: document.getElementById('t-type').value,
-                amount: document.getElementById('t-amount').value,
-                item: document.getElementById('t-item').value,
-                cat: document.getElementById('t-cat').value,
-                method: document.getElementById('t-method').value,
-                vendor: document.getElementById('t-vendor').value,
-                date: new Date().toLocaleDateString('en-GB')
-            };
-
-            if(!trans.amount) return;
-
-            db.trans.unshift(trans);
-            saveAll();
-            closeModal();
-            initApp();
-            
-            // Reset inputs
-            document.getElementById('t-amount').value = '';
-            document.getElementById('t-item').value = '';
-            document.getElementById('t-vendor').value = '';
+        function delTrans(i) {
+            if(confirm('حذف؟')) { db.trans.splice(i,1); saveAll(); initApp(); }
         }
 
         function saveOil() {
@@ -368,10 +409,8 @@
                 date: new Date().toLocaleDateString('en-GB')
             });
             const cost = document.getElementById('o-cost').value;
-            if(cost > 0) { // Add cost to expenses automatically
-                db.trans.unshift({
-                    id: Date.now(), type: 'expense', amount: cost, item: 'صيانة سيارة', cat: 'car', method: 'cash', date: new Date().toLocaleDateString()
-                });
+            if(cost > 0) {
+                db.trans.unshift({id:Date.now(), type:'expense', amount:cost, cat:'car', item:'صيانة', date: new Date().toLocaleDateString('en-GB'), method:'cash'});
             }
             saveAll(); closeModal(); initApp();
         }
@@ -385,46 +424,51 @@
             saveAll(); closeModal(); initApp();
         }
 
-        function renderCar() {
-            const last = db.car[db.car.length-1];
-            const div = document.getElementById('car-info');
-            if(last) div.innerHTML = `آخر صيانة: <b>${last.date}</b> | عداد: <b>${last.km} كم</b> <br> (${last.note})`;
-            else div.innerHTML = "لا توجد سجلات صيانة";
-        }
-
-        function renderSubs() {
-            const today = new Date().getDate();
+        function renderServices() {
+            // Car
+            const lastCar = db.car[db.car.length-1];
+            document.getElementById('car-info').innerText = lastCar ? `آخر صيانة: ${lastCar.date} (${lastCar.km} كم)` : 'لا توجد بيانات';
+            
+            // Subs
             const box = document.getElementById('subs-alert-box');
             box.innerHTML = '';
+            const today = new Date().getDate();
             db.subs.forEach(s => {
                 const diff = s.day - today;
-                let color = '#94a3b8';
-                let msg = `يوم ${s.day}`;
-                if(diff >= 0 && diff <= 3) { color = '#ef4444'; msg = 'مستحق قريباً!'; }
-                
-                box.innerHTML += `
-                <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #333;">
-                    <span>${s.name} (${s.cost})</span>
-                    <span style="color:${color}; font-size:11px;">${msg}</span>
+                const color = (diff >= 0 && diff <= 3) ? '#ef4444' : '#94a3b8';
+                box.innerHTML += `<div style="display:flex; justify-content:space-between; font-size:12px; padding:5px 0; border-bottom:1px dashed #333;">
+                    <span>${s.name} (${s.cost})</span><span style="color:${color}">يوم ${s.day}</span>
                 </div>`;
             });
         }
 
+        function populateAutoComplete() {
+            const dl = document.getElementById('items-list');
+            dl.innerHTML = '';
+            [...new Set(db.trans.map(t=>t.item))].forEach(i => dl.innerHTML += `<option value="${i}">`);
+        }
+        
+        function analyzeItem(v) {
+             if(v.length < 2) return;
+             const res = db.trans.filter(t=>t.item && t.item.includes(v));
+             const total = res.reduce((a,b)=>a+parseFloat(b.amount),0);
+             document.getElementById('analysis-result').innerHTML = `الإجمالي: ${total} ج.م (${res.length} عملية)`;
+        }
+
         function saveAll() {
-            localStorage.setItem('erp_v4_trans', JSON.stringify(db.trans));
-            localStorage.setItem('erp_v4_subs', JSON.stringify(db.subs));
-            localStorage.setItem('erp_v4_car', JSON.stringify(db.car));
+            localStorage.setItem('erp_v5_trans', JSON.stringify(db.trans));
+            localStorage.setItem('erp_v5_subs', JSON.stringify(db.subs));
+            localStorage.setItem('erp_v5_car', JSON.stringify(db.car));
         }
 
         function exportData() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-            const node = document.createElement('a');
-            node.setAttribute("href", dataStr);
-            node.setAttribute("download", "backup_erp.json");
-            node.click();
+            const a = document.createElement('a');
+            a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+            a.download = "Tracky_Backup.json";
+            a.click();
         }
 
-        // UTILS
+        // Utils
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
         function switchTab(id, el) {
@@ -432,16 +476,6 @@
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
-        }
-        function toggleFields() {
-             // Logic to hide/show fields based on income/expense if needed
-        }
-        function analyzeItem(val) {
-            // Simple filter logic for analysis tab
-            if(val.length < 2) return;
-            const res = db.trans.filter(t => t.item && t.item.includes(val));
-            let total = res.reduce((a,b)=>a+parseFloat(b.amount), 0);
-            document.getElementById('analysis-result').innerHTML = `إجمالي المصروف على "${val}": <b style="color:white">${total} ج.م</b> (عدد ${res.length} مرات)`;
         }
     </script>
 </body>
