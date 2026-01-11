@@ -3,414 +3,666 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lecturer Pro V2</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <title>Lecturer Pro V3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
     <style>
-        :root { --bg: #f3f4f6; --primary: #000; --accent: #2563eb; --text: #1f2937; }
-        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text: #0f172a;
+            --border: #e2e8f0;
+            --y1: #fbbf24; /* Yellow */
+            --y2: #2563eb; /* Blue */
+            --y3: #16a34a; /* Green */
+            --y4: #881337; /* Maroon */
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { margin: 0; font-family: 'Tajawal', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 90px; }
 
-        /* HEADER */
-        .header { background: white; padding: 15px; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-weight: 900; font-size: 18px; }
-        .notification-badge { background: #fee2e2; color: #dc2626; padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; display: flex; align-items: center; gap: 5px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+        /* HEADER & SEARCH */
+        .header {
+            background: var(--surface); padding: 15px; position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .search-bar { position: relative; width: 100%; }
+        .search-bar input {
+            width: 100%; padding: 12px 40px 12px 15px; border-radius: 12px;
+            border: 1px solid #cbd5e1; background: #f1f5f9; transition: 0.3s;
+        }
+        .search-bar input:focus { background: white; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .search-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #64748b; }
 
         /* CARDS */
-        .card { background: white; border-radius: 12px; padding: 15px; margin: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .card h3 { margin-top: 0; border-bottom: 1px solid #f3f4f6; padding-bottom: 10px; font-size: 16px; }
+        .card { background: var(--surface); border-radius: 16px; padding: 20px; margin: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid var(--border); }
+        .section-title { font-size: 18px; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
 
-        /* TABS & NAV */
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        .nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-around; padding: 10px 0; z-index: 200; }
-        .nav-item { text-align: center; font-size: 10px; color: #9ca3af; cursor: pointer; }
-        .nav-item.active { color: var(--primary); font-weight: bold; }
-        .nav-icon { font-size: 20px; display: block; margin-bottom: 4px; }
-
-        /* WA GENERATOR */
-        #wa-preview {
-            width: 100%; aspect-ratio: 9/16; /* Story Format */
-            background-color: #333; background-size: cover; background-position: center;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; color: white; padding: 20px; margin: 0 auto;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8); /* Shadow for readability */
-            position: relative;
+        /* ACADEMIC YEAR ICONS */
+        .year-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .year-card {
+            height: 120px; border-radius: 16px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; color: white; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s;
         }
-        .file-upload { display: none; }
-        .custom-file-upload { display: inline-block; padding: 6px 12px; cursor: pointer; background: #eee; border-radius: 5px; font-size: 11px; margin: 5px; }
+        .year-card:active { transform: scale(0.97); }
+        .year-card i { font-size: 30px; margin-bottom: 10px; }
+        .year-card span { font-weight: bold; font-size: 16px; }
 
-        /* STUDENT LIST */
-        .student-row { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #f3f4f6; align-items: center; }
+        .bg-y1 { background: var(--y1); color: #000; }
+        .bg-y2 { background: var(--y2); }
+        .bg-y3 { background: var(--y3); }
+        .bg-y4 { background: var(--y4); }
 
-        /* DOCTOR INFO */
-        .doc-card { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
-        
-        /* INPUTS */
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; margin-bottom: 10px; font-family: 'Tajawal'; }
-        .btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        /* TASK LIST (HOME) */
+        .task-item {
+            display: flex; align-items: center; padding: 12px; background: #f8fafc;
+            border-radius: 10px; margin-bottom: 8px; border-left: 4px solid #cbd5e1; transition: 0.3s;
+        }
+        .task-item.done { opacity: 0.6; text-decoration: line-through; border-left-color: #22c55e; }
+        .task-item.cancelled { opacity: 0.6; color: #ef4444; border-left-color: #ef4444; }
+        .task-actions { margin-right: auto; display: flex; gap: 10px; }
 
-        /* MODAL */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; justify-content: center; align-items: center; }
-        .modal-box { background: white; width: 90%; max-width: 450px; padding: 20px; border-radius: 15px; max-height: 90vh; overflow-y: auto; }
+        /* MY SCHEDULE (CALENDAR LOOK) */
+        .schedule-day {
+            border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 15px;
+        }
+        .day-header {
+            background: #f1f5f9; padding: 10px 15px; font-weight: bold; display: flex; justify-content: space-between;
+        }
+        .day-body { padding: 10px; }
+        .lec-slot {
+            background: white; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px;
+            margin-bottom: 5px; display: flex; justify-content: space-between; font-size: 13px;
+        }
 
-        /* PRINT */
+        /* PRINT STYLES */
+        .print-header-box { display: none; text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+        .print-title-main { font-size: 24px; font-weight: 900; }
+        .print-info-row { display: flex; justify-content: space-between; font-weight: bold; margin-top: 10px; font-size: 16px; }
+
+        table { width: 100%; border-collapse: collapse; display: none; }
+        th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+
         @media print {
-            body { background: white; }
-            .nav, .header, .fab, .no-print, .btn { display: none !important; }
+            body { background: white; padding: 0; }
+            .no-print, .nav, .header, .fab, .card-actions, .year-grid, .section-title { display: none !important; }
             .card { box-shadow: none; border: none; margin: 0; padding: 0; }
-            #tab-students { display: block !important; }
-            .print-header { display: block !important; text-align: center; border-bottom: 2px solid black; padding-bottom: 20px; margin-bottom: 20px; }
-            table { width: 100%; border-collapse: collapse; }
-            th, td { border: 1px solid black; padding: 8px; text-align: center; }
+            .tab-content { display: none; }
+            #tab-lists { display: block !important; }
+            #student-table-view { display: block !important; } /* Only show active table container */
+            table { display: table !important; }
+            .print-header-box { display: block !important; }
         }
-        .print-header { display: none; }
+
+        /* MODALS */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: none; justify-content: center; align-items: center; }
+        .modal-box { background: white; width: 95%; max-width: 500px; padding: 20px; border-radius: 20px; max-height: 90vh; overflow-y: auto; }
+
+        /* NAV */
+        .nav { position: fixed; bottom: 0; width: 100%; background: white; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px 0; z-index: 1500; }
+        .nav-item { text-align: center; font-size: 10px; color: #94a3b8; transition: 0.2s; }
+        .nav-item.active { color: #0f172a; font-weight: bold; transform: translateY(-2px); }
+        .nav-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+
+        /* INPUTS */
+        input, textarea, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Tajawal'; }
+        .btn { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
+        .btn-primary { background: #0f172a; color: white; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="logo">Lecturer Pro 🎓</div>
-        <div class="notification-badge" id="post-reminder">
-            <i class="fab fa-whatsapp"></i> هل نشرت المواعيد؟
+    <div class="header no-print">
+        <div class="search-bar">
+            <input type="text" id="global-search" placeholder="بحث عن طالب (الاسم الكامل)..." onkeyup="globalSearch()">
+            <i class="fas fa-search search-icon"></i>
         </div>
     </div>
 
-    <div id="tab-dash" class="tab-content active">
+    <div id="tab-home" class="tab-content active">
         
-        <div class="card" id="today-alert-box" style="display:none; border-right:4px solid #eab308; background:#fefce8;">
-            <h3 style="border:none; margin:0;">⚠️ محاضرات اليوم</h3>
-            <div id="today-list"></div>
+        <div class="card">
+            <div class="section-title"><i class="fas fa-calendar-day" style="color:#2563eb"></i> مهام اليوم</div>
+            <div id="today-tasks-list">
+                </div>
+            <div style="margin-top:10px; display:flex; gap:5px;">
+                <input type="text" id="new-task-input" placeholder="مهمة سريعة..." style="margin:0;">
+                <button class="btn btn-primary" style="width:auto;" onclick="addQuickTask()">+</button>
+            </div>
+        </div>
+
+        <div class="card" style="background:#f0f9ff; border-color:#bae6fd;">
+            <div class="section-title"><i class="fas fa-briefcase" style="color:#0284c7"></i> تحضيرات الغد</div>
+            <div id="tomorrow-prep-list">
+                <div class="task-item"><i class="far fa-circle"></i> &nbsp; تنزيل المواعيد للجروب</div>
+            </div>
         </div>
 
         <div class="card">
-            <h3>🎨 تصميم حالة الواتساب</h3>
-            <p style="font-size:11px; color:#666;">اختر الفرقة ليقوم التطبيق بوضع الجدول على خلفيتك الخاصة</p>
-            
-            <select id="wa-year-select" onchange="updateWaPreview()">
+            <div class="section-title"><i class="fas fa-calendar-alt"></i> أجندة المهام</div>
+            <input type="date" id="task-date" onchange="renderTasksByDate()">
+            <div id="calendar-tasks-list"></div>
+        </div>
+    </div>
+
+    <div id="tab-academy" class="tab-content">
+        
+        <div class="card" style="background:transparent; border:none; box-shadow:none; padding:0;">
+            <div class="year-grid">
+                <div class="year-card bg-y1" onclick="openYearDetails(1)">
+                    <i class="fas fa-lightbulb"></i> <span>الفرقة الأولى</span>
+                </div>
+                <div class="year-card bg-y2" onclick="openYearDetails(2)">
+                    <i class="fas fa-book"></i> <span>الفرقة الثانية</span>
+                </div>
+                <div class="year-card bg-y3" onclick="openYearDetails(3)">
+                    <i class="fas fa-flask"></i> <span>الفرقة الثالثة</span>
+                </div>
+                <div class="year-card bg-y4" onclick="openYearDetails(4)">
+                    <i class="fas fa-graduation-cap"></i> <span>الفرقة الرابعة</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">
+                <i class="fas fa-user-clock"></i> جدولي (محاضراتي)
+                <button style="font-size:12px; margin-right:auto; padding:5px 10px;" class="btn btn-primary" onclick="openModal('modal-add-lec')">+ ميعاد</button>
+            </div>
+            <div id="my-schedule-container">
+                </div>
+        </div>
+
+        <div class="card">
+            <div class="section-title"><i class="fab fa-whatsapp" style="color:#25D366"></i> حالة الواتساب</div>
+            <select id="wa-year-select" onchange="generateWaPreview()">
                 <option value="1">الفرقة الأولى</option>
                 <option value="2">الفرقة الثانية</option>
                 <option value="3">الفرقة الثالثة</option>
                 <option value="4">الفرقة الرابعة</option>
             </select>
-
-            <div style="margin-bottom:10px; display:flex; flex-wrap:wrap; gap:5px;">
-                <label class="custom-file-upload">🖼️ خلفية 1 <input type="file" class="file-upload" onchange="saveBg(this, 1)"></label>
-                <label class="custom-file-upload">🖼️ خلفية 2 <input type="file" class="file-upload" onchange="saveBg(this, 2)"></label>
-                <label class="custom-file-upload">🖼️ خلفية 3 <input type="file" class="file-upload" onchange="saveBg(this, 3)"></label>
-                <label class="custom-file-upload">🖼️ خلفية 4 <input type="file" class="file-upload" onchange="saveBg(this, 4)"></label>
-            </div>
-
-            <div id="capture-area" style="margin-bottom:10px; border:1px solid #ccc;">
-                <div id="wa-preview">
-                    <h1 style="font-size:35px; font-weight:900; margin-bottom:5px;" id="wa-year-text">الفرقة الأولى</h1>
-                    <h3 style="background:white; color:black; padding:2px 10px; border-radius:5px;" id="wa-day-text">الأحد</h3>
-                    
-                    <div id="wa-schedule-list" style="margin: 30px 0; font-size:20px; line-height:1.8;">
-                        </div>
-
-                    <div style="position:absolute; bottom:30px; font-size:14px; opacity:0.8;">Dr. Tarek El Araby</div>
-                </div>
-            </div>
-
-            <button class="btn" onclick="downloadImage()"><i class="fas fa-download"></i> حفظ الصورة</button>
-        </div>
-    </div>
-
-    <div id="tab-intel" class="tab-content">
-        <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3>🧠 بيانات المواد والدكاترة</h3>
-                <button style="background:#222; color:white; border:none; padding:5px 10px; border-radius:5px; font-size:12px;" onclick="openModal('modal-add-doc')">+ إضافة</button>
-            </div>
-            <p style="font-size:11px; color:#666;">تحليل أسلوب الامتحانات لكل دكتور</p>
             
-            <div id="docs-list" style="margin-top:10px;">
-                </div>
-        </div>
-        
-        <div class="card">
-            <h3>📅 جدولي الخاص</h3>
-            <div id="my-schedule-list"></div>
-            <button class="btn" style="margin-top:10px;" onclick="openModal('modal-add-lec')">+ إضافة ميعاد</button>
+            <div id="wa-canvas" style="width:100%; aspect-ratio:9/16; background:#333; color:white; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px; position:relative; overflow:hidden;">
+                <h1 id="wa-year-title" style="font-size:30px; font-weight:900; z-index:2; margin-bottom:10px;">الفرقة الأولى</h1>
+                <h3 id="wa-day" style="background:white; color:black; padding:5px 15px; border-radius:20px; z-index:2;">الأحد</h3>
+                <div id="wa-list" style="margin-top:30px; font-size:22px; line-height:2; z-index:2; font-weight:bold;">
+                    </div>
+            </div>
+            <button class="btn btn-primary" style="margin-top:10px;" onclick="downloadWaImage()">تحميل الصورة</button>
         </div>
     </div>
 
-    <div id="tab-students" class="tab-content">
+    <div id="tab-lists" class="tab-content">
         <div class="card no-print">
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="search-st" placeholder="بحث..." onkeyup="renderStudents()">
-                <select id="filter-year" onchange="renderStudents()" style="width:100px;">
-                    <option value="all">الكل</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                </select>
+            <div class="section-title">كشوف الطلاب (للطباعة)</div>
+            <div class="year-grid">
+                <div class="year-card bg-y1" style="height:80px;" onclick="openPrintView(1)">الفرقة الأولى</div>
+                <div class="year-card bg-y2" style="height:80px;" onclick="openPrintView(2)">الفرقة الثانية</div>
+                <div class="year-card bg-y3" style="height:80px;" onclick="openPrintView(3)">الفرقة الثالثة</div>
+                <div class="year-card bg-y4" style="height:80px;" onclick="openPrintView(4)">الفرقة الرابعة</div>
             </div>
-            <button class="btn" style="background:#333;" onclick="window.print()"><i class="fas fa-print"></i> طباعة الكشف</button>
+            <div style="margin-top:20px;">
+                <label>إضافة طالب للكشف</label>
+                <button class="btn btn-primary" onclick="openModal('modal-add-student')">+ تسجيل طالب جديد</button>
+            </div>
         </div>
 
-        <div class="print-header">
-            <h1>كشف الطلاب</h1>
-            <h3 id="print-subtitle">جميع الفرق</h3>
-        </div>
+        <div id="student-table-view" style="display:none; background:white; padding:20px;">
+            <div class="no-print">
+                <button onclick="closePrintView()" style="float:left; background:#ccc; border:none; padding:5px 10px; cursor:pointer;">X إغلاق</button>
+                <button onclick="window.print()" style="background:#0f172a; color:white; border:none; padding:5px 15px; cursor:pointer;">طباعة</button>
+                <div style="clear:both; margin-bottom:20px;"></div>
+            </div>
 
-        <div id="students-container" style="background:white; min-height:500px;">
-            <table style="width:100%; display:none;" id="print-table">
-                <thead><tr><th>م</th><th>الاسم</th><th>الفرقة</th><th>المدفوع</th><th>التاريخ</th></tr></thead>
+            <div class="print-header-box">
+                <div class="print-title-main" id="print-year-name">الفرقة الأولى</div>
+                <div class="print-info-row">
+                    <span>العام الدراسي 2025/2026</span>
+                    <span>الترم الثاني</span>
+                </div>
+                <div class="print-info-row" style="font-size:14px; margin-top:5px; color:#555;">
+                    <span id="print-subjects">مواد: ...</span>
+                </div>
+            </div>
+
+            <table id="main-table">
+                <thead>
+                    <tr>
+                        <th style="width:5%">م</th>
+                        <th style="width:40%">الاسم</th>
+                        <th style="width:20%">حالة الدفع</th>
+                        <th style="width:35%">تاريخ الدفع</th>
+                    </tr>
+                </thead>
                 <tbody id="print-tbody"></tbody>
             </table>
-            
-            <div id="mobile-list"></div>
-        </div>
-
-        <div class="fab no-print" onclick="openModal('modal-add-st')" style="position:fixed; bottom:80px; left:20px; width:55px; height:55px; background:black; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.3);">
-            <i class="fas fa-plus"></i>
         </div>
     </div>
 
-    <div class="modal" id="modal-add-doc">
-        <div class="modal-box">
-            <h3>بيانات مادة جديدة</h3>
-            <input type="text" id="doc-sub" placeholder="اسم المادة">
-            <select id="doc-year"><option value="1">فرقة 1</option><option value="2">فرقة 2</option><option value="3">فرقة 3</option><option value="4">فرقة 4</option></select>
-            <input type="text" id="doc-name" placeholder="اسم الدكتور">
-            <textarea id="doc-notes" placeholder="ملاحظات: (بيحب المقالي، أسئلته من الكتاب، بيركز على الفصل الأول...)" rows="4"></textarea>
-            <button class="btn" onclick="saveDoc()">حفظ</button>
-            <button class="btn" style="background:transparent; color:#333; margin-top:5px;" onclick="closeModal()">إغلاق</button>
+    <div class="modal" id="modal-year-details">
+        <div class="modal-box" id="year-modal-bg">
+            <h2 id="modal-year-title" style="text-align:center; color:white; text-shadow:0 1px 3px rgba(0,0,0,0.5);">الفرقة الأولى</h2>
+            
+            <div class="card">
+                <h4><i class="fas fa-university"></i> جدول محاضرات الكلية</h4>
+                <input type="file" id="college-schedule-upload" onchange="uploadImage(this, 'lec')">
+                <img id="college-schedule-img" src="" style="width:100%; display:none; border-radius:8px; margin-top:5px;">
+            </div>
+
+            <div class="card">
+                <h4><i class="fas fa-users"></i> جدول السكاشن</h4>
+                <input type="file" id="section-schedule-upload" onchange="uploadImage(this, 'sec')">
+                <img id="section-schedule-img" src="" style="width:100%; display:none; border-radius:8px; margin-top:5px;">
+            </div>
+
+            <div class="card">
+                <h4><i class="fas fa-calendar-check"></i> أيام الكلية</h4>
+                <textarea id="college-days-input" placeholder="مثلاً: السبت (محاضرات) - الثلاثاء (سكاشن)" oninput="saveCollegeDays()"></textarea>
+            </div>
+
+            <button class="btn btn-primary" onclick="closeModal()">إغلاق</button>
         </div>
     </div>
 
     <div class="modal" id="modal-add-lec">
         <div class="modal-box">
             <h3>ميعاد جديد</h3>
-            <select id="lec-day">
-                <option>السبت</option><option>الأحد</option><option>الاثنين</option><option>الثلاثاء</option><option>الأربعاء</option><option>الخميس</option><option>الجمعة</option>
-            </select>
+            <label>التاريخ</label>
+            <input type="date" id="lec-date">
+            <label>الوقت</label>
             <input type="time" id="lec-time">
-            <select id="lec-year"><option value="1">فرقة 1</option><option value="2">فرقة 2</option><option value="3">فرقة 3</option><option value="4">فرقة 4</option></select>
-            <input type="text" id="lec-name" placeholder="نوع المحاضرة (أساسي/مراجعة)">
-            <button class="btn" onclick="saveLec()">حفظ</button>
-            <button class="btn" style="background:transparent; color:#333; margin-top:5px;" onclick="closeModal()">إغلاق</button>
+            <label>الفرقة</label>
+            <select id="lec-year">
+                <option value="1">الأولى</option><option value="2">الثانية</option><option value="3">الثالثة</option><option value="4">الرابعة</option>
+            </select>
+            <label>المادة / الموضوع</label>
+            <input type="text" id="lec-sub">
+            <button class="btn btn-primary" onclick="saveMyLecture()">حفظ</button>
+            <button class="btn" onclick="closeModal()" style="background:transparent; color:#333;">إلغاء</button>
         </div>
     </div>
 
-    <div class="modal" id="modal-add-st">
+    <div class="modal" id="modal-add-student">
         <div class="modal-box">
-            <h3>طالب جديد</h3>
-            <input type="text" id="st-name" placeholder="الاسم">
-            <input type="tel" id="st-phone" placeholder="رقم الموبايل">
-            <select id="st-year"><option value="1">فرقة 1</option><option value="2">فرقة 2</option><option value="3">فرقة 3</option><option value="4">فرقة 4</option></select>
-            <input type="number" id="st-paid" placeholder="المبلغ المدفوع">
-            <button class="btn" onclick="saveStudent()">حفظ</button>
-            <button class="btn" style="background:transparent; color:#333; margin-top:5px;" onclick="closeModal()">إغلاق</button>
+            <h3>تسجيل طالب</h3>
+            <input type="text" id="st-name" placeholder="الاسم رباعي">
+            <input type="tel" id="st-phone" placeholder="رقم الهاتف">
+            <select id="st-year">
+                <option value="1">الفرقة الأولى</option><option value="2">الفرقة الثانية</option><option value="3">الفرقة الثالثة</option><option value="4">الفرقة الرابعة</option>
+            </select>
+            <label>الدفع</label>
+            <input type="number" id="st-amount" placeholder="المبلغ">
+            <button class="btn btn-primary" onclick="saveStudent()">حفظ</button>
+            <button class="btn" onclick="closeModal()" style="background:transparent; color:#333;">إلغاء</button>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-search">
+        <div class="modal-box">
+            <h3>نتيجة البحث</h3>
+            <div id="search-results-container"></div>
+            <button class="btn" onclick="closeModal()" style="background:transparent; color:red;">إغلاق</button>
         </div>
     </div>
 
     <div class="nav no-print">
-        <div class="nav-item active" onclick="switchTab('tab-dash', this)">
-            <i class="fas fa-home nav-icon"></i> الرئيسية
-        </div>
-        <div class="nav-item" onclick="switchTab('tab-intel', this)">
-            <i class="fas fa-brain nav-icon"></i> الأكاديمية
-        </div>
-        <div class="nav-item" onclick="switchTab('tab-students', this)">
-            <i class="fas fa-users nav-icon"></i> الكشوف
-        </div>
+        <div class="nav-item active" onclick="switchTab('tab-home', this)"><i class="fas fa-tasks nav-icon"></i> المهام</div>
+        <div class="nav-item" onclick="switchTab('tab-academy', this)"><i class="fas fa-university nav-icon"></i> الأكاديمية</div>
+        <div class="nav-item" onclick="switchTab('tab-lists', this)"><i class="fas fa-print nav-icon"></i> الكشوف</div>
     </div>
 
     <script>
-        // DATA
+        // --- DATABASE ---
         let db = {
-            students: JSON.parse(localStorage.getItem('lp_students')) || [],
-            docs: JSON.parse(localStorage.getItem('lp_docs')) || [],
-            schedule: JSON.parse(localStorage.getItem('lp_schedule')) || [],
-            bg_images: JSON.parse(localStorage.getItem('lp_bg_images')) || {}
+            students: JSON.parse(localStorage.getItem('lp3_students')) || [],
+            mySchedule: JSON.parse(localStorage.getItem('lp3_schedule')) || [],
+            tasks: JSON.parse(localStorage.getItem('lp3_tasks')) || [],
+            collegeData: JSON.parse(localStorage.getItem('lp3_college')) || {
+                1: {lec:'', sec:'', days:''}, 2: {lec:'', sec:'', days:''},
+                3: {lec:'', sec:'', days:''}, 4: {lec:'', sec:'', days:''}
+            },
+            bgImages: JSON.parse(localStorage.getItem('lp3_bg')) || {} 
         };
 
-        const daysMap = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+        const yearColors = {1: 'var(--y1)', 2: 'var(--y2)', 3: 'var(--y3)', 4: 'var(--y4)'};
+        const yearNames = {1: 'الفرقة الأولى', 2: 'الفرقة الثانية', 3: 'الفرقة الثالثة', 4: 'الفرقة الرابعة'};
+        
+        let currentOpenYear = 1;
 
-        // INIT
+        // --- INIT ---
         window.onload = function() {
-            checkTodayAlerts();
-            renderStudents();
-            renderDocs();
+            renderTodayTasks();
+            renderTomorrowPrep();
             renderMySchedule();
-            updateWaPreview();
+            document.getElementById('task-date').valueAsDate = new Date();
+            renderTasksByDate();
         };
 
-        // --- BACKGROUND IMAGE LOGIC ---
-        function saveBg(input, year) {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    db.bg_images[year] = e.target.result; // Save DataURL
-                    localStorage.setItem('lp_bg_images', JSON.stringify(db.bg_images));
-                    updateWaPreview();
-                    alert(`تم حفظ خلفية الفرقة ${year}`);
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function updateWaPreview() {
-            const year = document.getElementById('wa-year-select').value;
-            const preview = document.getElementById('wa-preview');
-            
-            // Set Background
-            if(db.bg_images[year]) {
-                preview.style.backgroundImage = `url(${db.bg_images[year]})`;
-            } else {
-                preview.style.backgroundColor = '#333'; // Default fallback
-                preview.style.backgroundImage = 'none';
-            }
-
-            // Set Data
-            document.getElementById('wa-year-text').innerText = 'الفرقة ' + (year==1?'الأولى':year==2?'الثانية':year==3?'الثالثة':'الرابعة');
-            
-            // Get Tomorrow's Day
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            const dayName = daysMap[tomorrow.getDay()];
-            document.getElementById('wa-day-text').innerText = dayName;
-
-            // Fill Schedule
-            const list = document.getElementById('wa-schedule-list');
-            list.innerHTML = '';
-            
-            const lecs = db.schedule.filter(s => s.year == year && s.day === dayName);
-            lecs.sort((a,b) => a.time.localeCompare(b.time));
-
-            if(lecs.length === 0) {
-                list.innerHTML = '<div>لا توجد محاضرات غداً</div>';
-            } else {
-                lecs.forEach(l => {
-                    // Convert time to 12h simple
-                    list.innerHTML += `<div style="font-weight:bold;">${l.name}</div><div style="font-size:0.8em; margin-bottom:15px;">الساعة ${l.time}</div>`;
-                });
-            }
-        }
-
-        function downloadImage() {
-            const el = document.getElementById('wa-preview');
-            html2canvas(el, { scale: 2, useCORS: true }).then(canvas => {
-                const a = document.createElement('a');
-                a.download = `Schedule_Y${document.getElementById('wa-year-select').value}.png`;
-                a.href = canvas.toDataURL();
-                a.click();
-            });
-        }
-
-        // --- ACADEMIC INTEL (DOCS) ---
-        function saveDoc() {
-            db.docs.push({
-                sub: document.getElementById('doc-sub').value,
-                year: document.getElementById('doc-year').value,
-                name: document.getElementById('doc-name').value,
-                notes: document.getElementById('doc-notes').value
-            });
-            localStorage.setItem('lp_docs', JSON.stringify(db.docs));
-            closeModal(); renderDocs();
-        }
-
-        function renderDocs() {
-            const list = document.getElementById('docs-list');
-            list.innerHTML = '';
-            db.docs.forEach(d => {
-                list.innerHTML += `
-                <div class="doc-card">
-                    <div style="display:flex; justify-content:space-between;">
-                        <span style="font-weight:bold">${d.sub} (د. ${d.name})</span>
-                        <span style="font-size:10px; background:white; padding:2px 5px; border-radius:4px;">سنة ${d.year}</span>
-                    </div>
-                    <div style="font-size:12px; margin-top:5px; color:#4b5563;">💡 ${d.notes}</div>
-                </div>`;
-            });
-        }
-
-        // --- SCHEDULE ---
-        function saveLec() {
-            db.schedule.push({
-                day: document.getElementById('lec-day').value,
-                time: document.getElementById('lec-time').value,
-                year: document.getElementById('lec-year').value,
-                name: document.getElementById('lec-name').value
-            });
-            localStorage.setItem('lp_schedule', JSON.stringify(db.schedule));
-            closeModal(); renderMySchedule(); updateWaPreview();
-        }
-
-        function renderMySchedule() {
-            const list = document.getElementById('my-schedule-list');
-            list.innerHTML = '';
-            // Sort by day then time (Simplified view)
-            db.schedule.forEach(l => {
-                list.innerHTML += `<div class="student-row" style="padding:8px;"><span>${l.day} ${l.time}</span><span>فرقة ${l.year} (${l.name})</span></div>`;
-            });
-        }
-
-        function checkTodayAlerts() {
-            const todayName = daysMap[new Date().getDay()];
-            const todayLecs = db.schedule.filter(s => s.day === todayName);
-            if(todayLecs.length > 0) {
-                document.getElementById('today-alert-box').style.display = 'block';
-                todayLecs.forEach(l => {
-                    document.getElementById('today-list').innerHTML += `<div>⏰ ${l.time} - فرقة ${l.year}</div>`;
-                });
-            }
-        }
-
-        // --- STUDENTS ---
-        function saveStudent() {
-            db.students.push({
-                name: document.getElementById('st-name').value,
-                phone: document.getElementById('st-phone').value,
-                year: document.getElementById('st-year').value,
-                paid: document.getElementById('st-paid').value,
-                date: new Date().toLocaleDateString('ar-EG')
-            });
-            localStorage.setItem('lp_students', JSON.stringify(db.students));
-            closeModal(); renderStudents();
-        }
-
-        function renderStudents() {
-            const y = document.getElementById('filter-year').value;
-            const q = document.getElementById('search-st').value.toLowerCase();
-            const mobList = document.getElementById('mobile-list');
-            const printBody = document.getElementById('print-tbody');
-            
-            mobList.innerHTML = ''; printBody.innerHTML = '';
-            document.getElementById('print-subtitle').innerText = y==='all' ? 'جميع الفرق' : 'الفرقة ' + y;
-
-            let count = 1;
-            db.students.filter(s => (y==='all' || s.year===y) && s.name.includes(q)).forEach(s => {
-                // Mobile
-                mobList.innerHTML += `
-                <div class="student-row">
-                    <div><b>${s.name}</b> <small style="color:#666">(${s.phone})</small></div>
-                    <div style="text-align:left"><b>${s.paid} ج.م</b><br><small>${s.date}</small></div>
-                </div>`;
-                // Print
-                printBody.innerHTML += `<tr><td>${count++}</td><td>${s.name}</td><td>${s.year}</td><td>${s.paid}</td><td>${s.date}</td></tr>`;
-            });
-        }
-
-        // --- UTILS ---
+        // --- TAB SYSTEM ---
         function switchTab(id, el) {
             document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
             el.classList.add('active');
         }
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal() { document.querySelectorAll('.modal').forEach(m=>m.style.display = 'none'); }
+        function openModal(id) { document.getElementById(id).style.display='flex'; }
+        function closeModal() { document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); }
+
+        // --- HOME: TASKS ---
+        function renderTodayTasks() {
+            const today = new Date().toISOString().split('T')[0];
+            const list = document.getElementById('today-tasks-list');
+            list.innerHTML = '';
+            
+            // 1. My Lectures Today
+            const lecs = db.mySchedule.filter(s => s.date === today);
+            lecs.forEach(l => {
+                list.innerHTML += `<div class="task-item">
+                    <i class="fas fa-chalkboard-teacher" style="color:#2563eb; margin-left:10px;"></i>
+                    <div><b>${l.time}</b>: فرقة ${l.year} (${l.sub})</div>
+                    <div class="task-actions">
+                        <i class="far fa-check-circle" onclick="toggleDone(this)"></i>
+                    </div>
+                </div>`;
+            });
+
+            // 2. Manual Tasks
+            const tasks = db.tasks.filter(t => t.date === today);
+            tasks.forEach(t => {
+                list.innerHTML += `<div class="task-item">
+                    <i class="fas fa-check-square" style="color:#64748b; margin-left:10px;"></i>
+                    <div>${t.title}</div>
+                    <div class="task-actions"><i class="far fa-check-circle" onclick="toggleDone(this)"></i></div>
+                </div>`;
+            });
+
+            if(lecs.length===0 && tasks.length===0) list.innerHTML = '<div style="color:#94a3b8; font-size:12px; text-align:center;">لا مهام اليوم</div>';
+        }
+
+        function renderTomorrowPrep() {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tDate = tomorrow.toISOString().split('T')[0];
+            
+            const hasLecs = db.mySchedule.some(s => s.date === tDate);
+            const list = document.getElementById('tomorrow-prep-list');
+            list.innerHTML = '';
+
+            if(hasLecs) {
+                list.innerHTML += `<div class="task-item"><i class="far fa-square"></i> &nbsp; تنزيل المواعيد للجروب</div>`;
+                list.innerHTML += `<div class="task-item"><i class="far fa-square"></i> &nbsp; تجهيز محاضرات الغد</div>`;
+            } else {
+                list.innerHTML = '<div style="font-size:12px; color:#888">غداً يوم راحة</div>';
+            }
+        }
+
+        function addQuickTask() {
+            const title = document.getElementById('new-task-input').value;
+            if(!title) return;
+            db.tasks.push({
+                id: Date.now(),
+                title: title,
+                date: new Date().toISOString().split('T')[0],
+                status: 'pending'
+            });
+            localStorage.setItem('lp3_tasks', JSON.stringify(db.tasks));
+            document.getElementById('new-task-input').value = '';
+            renderTodayTasks();
+        }
+
+        function toggleDone(el) {
+            el.closest('.task-item').classList.toggle('done');
+        }
+
+        function renderTasksByDate() {
+            const date = document.getElementById('task-date').value;
+            const list = document.getElementById('calendar-tasks-list');
+            list.innerHTML = '';
+            
+            db.tasks.filter(t => t.date === date).forEach(t => {
+                list.innerHTML += `<div class="task-item">${t.title}</div>`;
+            });
+        }
+
+        // --- ACADEMY: YEAR DETAILS ---
+        function openYearDetails(year) {
+            currentOpenYear = year;
+            const modalBg = document.getElementById('year-modal-bg');
+            modalBg.className = 'modal-box bg-y' + year; // Apply color class
+            modalBg.style.background = yearColors[year]; // Fallback
+            
+            document.getElementById('modal-year-title').innerText = yearNames[year];
+            
+            // Load Images
+            const data = db.collegeData[year];
+            const lecImg = document.getElementById('college-schedule-img');
+            const secImg = document.getElementById('section-schedule-img');
+            
+            if(data.lec) { lecImg.src = data.lec; lecImg.style.display = 'block'; }
+            else { lecImg.style.display = 'none'; }
+
+            if(data.sec) { secImg.src = data.sec; secImg.style.display = 'block'; }
+            else { secImg.style.display = 'none'; }
+
+            // Load Text
+            document.getElementById('college-days-input').value = data.days || '';
+
+            openModal('modal-year-details');
+        }
+
+        function uploadImage(input, type) {
+            const file = input.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    db.collegeData[currentOpenYear][type] = e.target.result;
+                    localStorage.setItem('lp3_college', JSON.stringify(db.collegeData));
+                    openYearDetails(currentOpenYear); // Refresh
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveCollegeDays() {
+            const txt = document.getElementById('college-days-input').value;
+            db.collegeData[currentOpenYear].days = txt;
+            localStorage.setItem('lp3_college', JSON.stringify(db.collegeData));
+        }
+
+        // --- ACADEMY: MY SCHEDULE ---
+        function saveMyLecture() {
+            const l = {
+                id: Date.now(),
+                date: document.getElementById('lec-date').value,
+                time: document.getElementById('lec-time').value,
+                year: document.getElementById('lec-year').value,
+                sub: document.getElementById('lec-sub').value
+            };
+            db.mySchedule.push(l);
+            localStorage.setItem('lp3_schedule', JSON.stringify(db.mySchedule));
+            closeModal();
+            renderMySchedule();
+            renderTomorrowPrep();
+        }
+
+        function renderMySchedule() {
+            const container = document.getElementById('my-schedule-container');
+            container.innerHTML = '';
+            
+            // Sort by date
+            db.mySchedule.sort((a,b) => new Date(a.date) - new Date(b.date));
+            
+            // Group by Day
+            const groups = {};
+            db.mySchedule.forEach(l => {
+                if(!groups[l.date]) groups[l.date] = [];
+                groups[l.date].push(l);
+            });
+
+            for (const [date, lecs] of Object.entries(groups)) {
+                // Check if past
+                if(new Date(date) < new Date().setHours(0,0,0,0)) continue; // Hide past?
+
+                const dayName = new Date(date).toLocaleDateString('ar-EG', {weekday: 'long'});
+                let html = `<div class="schedule-day">
+                    <div class="day-header"><span>${dayName}</span> <span>${date}</span></div>
+                    <div class="day-body">`;
+                
+                lecs.sort((a,b)=>a.time.localeCompare(b.time));
+                lecs.forEach(l => {
+                    html += `<div class="lec-slot" style="border-right:4px solid ${yearColors[l.year]}">
+                        <span>${l.time} - فرقة ${l.year}</span>
+                        <span>${l.sub}</span>
+                        <i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="deleteLec(${l.id})"></i>
+                    </div>`;
+                });
+                html += `</div></div>`;
+                container.innerHTML += html;
+            }
+        }
+
+        function deleteLec(id) {
+            if(confirm('حذف الميعاد؟')) {
+                db.mySchedule = db.mySchedule.filter(s => s.id !== id);
+                localStorage.setItem('lp3_schedule', JSON.stringify(db.mySchedule));
+                renderMySchedule();
+            }
+        }
+
+        // --- WHATSAPP GENERATOR ---
+        function saveBg(input, year) {
+             const file = input.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    db.bgImages[year] = e.target.result;
+                    localStorage.setItem('lp3_bg', JSON.stringify(db.bgImages));
+                    alert('تم حفظ الخلفية');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function generateWaPreview() {
+            const year = document.getElementById('wa-year-select').value;
+            const canvas = document.getElementById('wa-canvas');
+            
+            // Background
+            if(db.bgImages[year]) {
+                canvas.style.backgroundImage = `url(${db.bgImages[year]})`;
+                canvas.style.backgroundSize = 'cover';
+            } else {
+                canvas.style.background = yearColors[year];
+                canvas.style.backgroundImage = 'none';
+            }
+
+            document.getElementById('wa-year-title').innerText = yearNames[year];
+            
+            // Get Tomorrow's lectures for this year
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tDate = tomorrow.toISOString().split('T')[0];
+            const dayName = tomorrow.toLocaleDateString('ar-EG', {weekday:'long'});
+
+            document.getElementById('wa-day').innerText = dayName;
+
+            const list = document.getElementById('wa-list');
+            list.innerHTML = '';
+
+            const lecs = db.mySchedule.filter(l => l.date === tDate && l.year == year);
+            if(lecs.length === 0) {
+                list.innerHTML = '<div>لا توجد محاضرات غداً</div>';
+            } else {
+                lecs.sort((a,b)=>a.time.localeCompare(b.time));
+                lecs.forEach(l => {
+                    list.innerHTML += `<div>${l.sub} <br><span style="font-size:0.8em">${l.time}</span></div>`;
+                });
+            }
+        }
+
+        function downloadWaImage() {
+            const el = document.getElementById('wa-canvas');
+            html2canvas(el).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Status.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+
+        // --- LISTS & STUDENTS ---
+        function saveStudent() {
+            const s = {
+                id: Date.now(),
+                name: document.getElementById('st-name').value,
+                phone: document.getElementById('st-phone').value,
+                year: document.getElementById('st-year').value,
+                payments: []
+            };
+            const amt = document.getElementById('st-amount').value;
+            if(amt) s.payments.push({date: new Date().toLocaleDateString('ar-EG'), amount: amt});
+            
+            db.students.push(s);
+            localStorage.setItem('lp3_students', JSON.stringify(db.students));
+            closeModal();
+            alert('تم الحفظ');
+        }
+
+        function globalSearch() {
+            const q = document.getElementById('global-search').value.toLowerCase();
+            if(q.length < 2) return;
+            
+            const res = db.students.filter(s => s.name.toLowerCase().includes(q));
+            const container = document.getElementById('search-results-container');
+            container.innerHTML = '';
+            
+            res.forEach(s => {
+                let payHist = s.payments.map(p => `${p.amount} (${p.date})`).join(' , ');
+                container.innerHTML += `<div style="padding:10px; border-bottom:1px solid #ccc;">
+                    <b>${s.name}</b> - فرقة ${s.year}<br>
+                    <small>${s.phone}</small><br>
+                    <small style="color:green">${payHist || 'لم يدفع'}</small>
+                </div>`;
+            });
+            openModal('modal-search');
+        }
+
+        // PRINT VIEW
+        function openPrintView(year) {
+            document.getElementById('student-table-view').style.display = 'block';
+            document.querySelector('.nav').style.display = 'none'; // hide nav
+            
+            document.getElementById('print-year-name').innerText = yearNames[year];
+            
+            // Subjects based on Year (Hardcoded or you can add logic)
+            const subjects = year == 1 ? "محاسبة مالية - إدارة" : year==2 ? "شركات - تكاليف" : "مواد...";
+            document.getElementById('print-subjects').innerText = "مواد: " + subjects;
+
+            const tbody = document.getElementById('print-tbody');
+            tbody.innerHTML = '';
+            
+            let i = 1;
+            db.students.filter(s => s.year == year).forEach(s => {
+                const paid = s.payments.length > 0 ? 'مدفوع' : 'غير مدفوع';
+                const dates = s.payments.map(p => p.date).join(' / ');
+                
+                tbody.innerHTML += `<tr>
+                    <td>${i++}</td>
+                    <td>${s.name}</td>
+                    <td>${paid}</td>
+                    <td>${dates}</td>
+                </tr>`;
+            });
+        }
+
+        function closePrintView() {
+            document.getElementById('student-table-view').style.display = 'none';
+            document.querySelector('.nav').style.display = 'flex';
+        }
+
     </script>
 </body>
 </html>
